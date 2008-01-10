@@ -21,6 +21,7 @@ end
 # doc = Hpricot.XML(open(game_url))
 Shoes.app :height => 34*16, :width => 34*16 do
 
+strokewidth(2)
 draw_board
 
 doc = Hpricot.XML(open('endgame.xml'))
@@ -50,15 +51,16 @@ moves[1..-1].each_with_index { |j, move|
         letter,x,y,f = nodes[node]
         if letter == ch then
             node = node + 1
-            xc = 34*y.to_i + 17
-            yc = 34*x.to_i + 17
+            xc = 34*y.to_i + 18
+            yc = 34*x.to_i + 18
 # puts "#{player} placed #{letter} at #{x},#{y}"
             if letter.upcase == letter then
                 o = image "#{letter}.png", :left => xc, :top => yc
             else
                 o = image "#{letter.upcase}.png", :left => xc, :top => yc
                 nofill
-                stroke rgb(0.0,0.0,0.0) 
+                strokewidth(3)
+                stroke rgb(1.0,0.0,0.0) 
                 rect xc-2, yc-2, 34, 34
             end
         end
