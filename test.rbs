@@ -1,0 +1,36 @@
+Shoes.app :height => 34*17, :width => 34*15 do
+    tiles = Array.new(15) {Array.new(15,'white')}
+    { 
+        'red' => [[0,0],[0,7],[0,14],[7,0]],
+        'aquamarine' => [[0,3],[3,0],[2,6],[6,2],[7,3],[6,6]],
+        'blue' => [[1,5],[5,1],[5,5]],
+        'pink' => [[1,1],[2,2],[3,3],[4,4],[7,7]]
+    }.each { |k,v|
+        v.each { |x,y|
+            rx,ry = 14-x,14-y
+            tiles[x][y] = k
+            tiles[y][x] = k
+            tiles[rx][ry] = k
+            tiles[ry][rx] = k
+            tiles[rx][y] = k
+            tiles[x][ry] = k
+        }
+    }
+squares = Array.new(15) {Array.new(15)}
+    
+stack :margin => 10 do
+Shoes.p "Game ID"
+game_id = edit_line :text => 'Game ID'
+end
+tiles.each_with_index { |i,x|
+    stack :width => 15*32 do
+        flow do
+        i.each_with_index { |p,y|
+            squares[x][y] = image "..\\..\\..\\letters\\#{p}.png"
+        }
+    end
+    end
+}
+
+squares[1][1].path = '..\..\..\letters\A.png'
+end
