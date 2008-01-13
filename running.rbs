@@ -1,0 +1,75 @@
+require 'time'
+require 'rubygems'
+require 'hpricot'
+require 'open-uri'
+
+TimeTrials = YAML::load(<<RUNS)
+- name: RPTT 
+  url: http://www.parkrun.com/snippets/RPTT/athletes/7111.html?r=97928
+  color: [ 0.5, 0.5, 1.0 ]
+  file: rptt.html
+- name: BPTT 
+  url: http://www.parkrun.com/snippets/BPTT/athletes/7111.html?r=51087
+  color: [ 1.0, 0.5, 0.5 ]
+  file: bptt.html
+RUNS
+
+
+tts = []
+runs = []
+
+    TimeTrials.each { |tt|
+        tts.push [tt['name'],tt['color']]
+        runcount = 0
+        doc = Hpricot(open(tt['file'])) # tt['url']))
+        headers = doc.search("//table[@id='AthleteHistory']/tr/th").map { |i| i.inner_text.strip }
+        doc.search("//table[@id='AthleteHistory']/tr/td/..").each_with_index { |tr,i|
+            tmp = {}
+            tr.search('/td').each_with_index { |td,j| 
+#                puts "#{i} = `#{td.inner_text.strip}', #{j}=#{headers[j]}"
+                tmp[headers[j]] = td.inner_text.strip
+            }
+            min, sec = tmp['RunTime'].split(':')
+            tmp['Seconds'] = 60*min.to_i + sec.to_i
+            tmp['Color'] = tt['color']
+            tmp['Epoch'] = Time.parse(tmp['Date']).to_i
+            runs.push tmp
+        }
+    }
+    
+    # nasty but we can't make an empty array of hashes
+    runs = runs.select {|i| i.keys.size > 0}.sort_by {|i| i['Epoch']} 
+    max = runs.sort_by { |i| i['Seconds'] }[0]['Seconds']
+
+Shoes.app :width => 524, :height => 40+10*runs.size do
+    framecount = 0
+    framerate = 1
+    stack do
+	    animate(30) do
+	        clear do
+                elapsed = framecount.to_f / framerate
+		        stack do
+                flow do
+                    tts.each {|i,j|
+                        para span(i, :stroke => rgb(*j))
+                    }
+		            para sprintf('%02d:%2.02f', elapsed/60, elapsed%60)
+                end
+		        end
+                stroke rgb(0.5,1.0,0.5)
+                line 6,30,6,25+10*runs.size
+                stroke rgb(1.0,0.5,0.5)
+                line 512,30,512,25+10*runs.size
+                stroke rgb(0.0,0.0,0.0)
+                runs.each_with_index { |run,i|
+	                distance = 500*(elapsed/run['Seconds'])
+	                fill rgb(*run['Color'])
+	                oval distance+6, 30+10*i, 5, 5
+                }
+	        end
+	        if framecount < max then
+    	        framecount = framecount + 1
+            end
+	    end
+    end
+end
