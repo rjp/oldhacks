@@ -4,11 +4,12 @@ require 'open-uri'
 
 $server = '74.54.87.124'
 $squares = Array.new(15) {Array.new(15)}
+$colors = {'p1'=>'white', 'p2'=>'green', 'p3'=>'blue','p4'=>'purple'}
 
 def reset_board(tiles, squares)
     tiles.each_with_index { |i,x|
         i.each_with_index { |p,y|
-            squares[x.to_i][y.to_i].path = "#{p}.png"
+            squares[x.to_i][y.to_i].path = "letters/#{p}.png"
             squares[x.to_i][y.to_i].show
         }
     }
@@ -26,7 +27,7 @@ moves = []
 doc.search("/xml/movesnode/*").each { |i|
     if i.name =~ /^m(\d+)/ then
         move, player, word, score, type = i.inner_text.split(',')
-        moves[move.to_i] = [gi[player], word, score, type]
+        moves[move.to_i] = [gi[player], word, score, type, player]
     elsif i.name =~ /cnt/ then
         gi['movecount'] = i.inner_text.to_i
     end
@@ -39,13 +40,14 @@ doc.search("/xml/boardnode/nodeval") { |i|
 }
 node = 0
 moves[1..-1].each_with_index { |j, move|
-    player, word, score, type = j
+    player, word, score, type, player_id = j
+    color = $colors[player_id]
     word.split('').each { |ch|
         letter,x,y,f = nodes[node]
         if letter == ch then
             node = node + 1
 #            if letter.upcase == letter then
-            squares[x.to_i][y.to_i].path = "#{letter}.png"
+            squares[x.to_i][y.to_i].path = "letters/#{color}#{letter}.png"
             squares[x.to_i][y.to_i].show
 #            else
 #            end
@@ -55,7 +57,7 @@ moves[1..-1].each_with_index { |j, move|
 end
 
 # doc = Hpricot.XML(open(game_url))
-Shoes.app :height => 34*17, :width => 34*15 do
+Shoes.app :height => 32*16+8, :width => 32*15+5 do
     tiles = Array.new(15) {Array.new(15,'white')}
     { 
         'red' => [[0,0],[0,7],[0,14],[7,0]],
@@ -76,7 +78,7 @@ Shoes.app :height => 34*17, :width => 34*15 do
     
 stack :margin => 10 do
     flow do
-        game_id = edit_line :text => 'Game ID'
+        game_id = edit_line :text => '14065630'
         button "Display" do
             reset_board tiles, $squares
             update_board game_id.text, $squares
@@ -90,7 +92,7 @@ tiles.each_with_index { |i,x|
     stack :width => 15*32 do
         flow do
 	        i.each_with_index { |p,y|
-	            $squares[x.to_i][y.to_i] = image "#{p}.png"
+	            $squares[x.to_i][y.to_i] = image "letters/#{p}.png"
 	        }
         end
     end
