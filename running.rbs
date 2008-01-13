@@ -53,7 +53,7 @@ Shoes.app :width => 524, :height => 40+10*runs.size do
                     tts.each {|i,j|
                         para span(i, :stroke => rgb(*j))
                     }
-		            para sprintf('%02d:%2.02f', elapsed/60, elapsed%60)
+		            para sprintf('%02d:%05.02f', elapsed/60, elapsed%60)
                 end
 		        end
                 stroke rgb(0.5,1.0,0.5)
