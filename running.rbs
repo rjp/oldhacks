@@ -21,7 +21,7 @@ runs = []
     TimeTrials.each { |tt|
         tts.push [tt['name'],tt['color']]
         runcount = 0
-        doc = Hpricot(open(tt['file'])) # tt['url']))
+        doc = Hpricot(open(tt['url']))
         headers = doc.search("//table[@id='AthleteHistory']/tr/th").map { |i| i.inner_text.strip }
         doc.search("//table[@id='AthleteHistory']/tr/td/..").each_with_index { |tr,i|
             tmp = {}
