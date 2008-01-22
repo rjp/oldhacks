@@ -1,0 +1,11 @@
+Shell script to make a thumbnail from a completed Scrabulous game 
+stored in the SQLite3 database /tmp/scrabgames.db
+
+Outputs a 128x128 PNG suitable for uploading to Tumblr, etc.
+
+Requires a text file named blankboard which contains the list of
+filenames required for montage to create the full-sized blank board.
+
+The script iterates over the nodes, placing each letter into the 
+new list of images (newboard) using an ed script.  montage creates
+the full-sized image and convert scales it down to our thumbnail.
