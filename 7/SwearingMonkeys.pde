@@ -1,7 +1,15 @@
 ArrayList ps;
+String[] lines;
+String date="";
+int index=0;
+int level=100;
 
 void setup() 
 {
+  // load the sanitised log file
+  lines = loadStrings("sanitised");
+
+  // set up the graphical environment
   size(300, 300);
   background(255);
   frameRate(30);
@@ -10,12 +18,11 @@ void setup()
   PFont f = loadFont("VladimirScript-36.vlw");
   textFont(f,36);
   ps = new ArrayList();
-  ParticleSystem p = new ParticleSystem(0,new Vector3D(100,70,0),0xffff0000);
-  ParticleSystem q = new ParticleSystem(0,new Vector3D(200,70,0),0xff0000ff);
-  if (p!=null) {
+  // we should do this better
+  ParticleSystem p = new ParticleSystem(0,new Vector3D(100,level,0),0xffff0000);
+  ParticleSystem q = new ParticleSystem(0,new Vector3D(200,level,0),0xff0000ff);
   ps.add(p);
   ps.add(q);
-  }
 }
 
 void monkey(int x, int y, int s)
@@ -43,23 +50,39 @@ void monkey(int x, int y, int s)
 void draw() 
 {
   background(255);
-  monkey(100,70,40);
-  monkey(200,70,40);
+  monkey(100,level,40);
+  monkey(200,level,40);
+
   ParticleSystem x = (ParticleSystem) ps.get(0);
   x.run();
-  if (frameCount % 15 < random(5)) {
-    if (frameCount % 2 == 1) {
-    x.addParticle("fuck");
-    } else {
-      x.addParticle("fucking");
-    }
-  }
   x = (ParticleSystem) ps.get(1);
   x.run();
-  if (frameCount % 15 < random(5)) {
-    x.addParticle("cunt");
-  }
 
+  if (index < lines.length) {
+    String[] pieces = split(lines[index], ' ');
+    String[] m = match(lines[index], "(?i:((?:fucking \\w+|fuck|wank|shit|cunt|piss)(?:\\w+)?))");
+    String[] lc = match(lines[index], "Log opened (... ... ..)");
+    int col;
+    if (lc != null) {
+      date = lc[0];
+    }
+    if (pieces[2].equals("<p1>")) {
+      col = 0;
+    } else {
+      col = 1;
+    }
+    if (m != null) {
+      x = (ParticleSystem) ps.get(col);
+      x.addParticle(m[0]);
+    }
+    // Go to the next line for the next run through draw()
+    index = index + 1;
+  } 
+
+  fill(0);
+  textSize(18);
+  textAlign(LEFT);
+  text(date, 3, 15);
 }
 
 // lifted wholesale from the SimpleParticleSystem example
@@ -96,7 +119,7 @@ class Particle {
     timer = 100.0;
     myColor = c;
     myWord = w;
-    myAngle = random(-PI/6,PI/6);
+    myAngle = random(-PI/8,PI/8);
   }
 
 
@@ -109,16 +132,17 @@ class Particle {
   void update() {
     vel.add(acc);
     loc.add(vel);
-    timer -= 1.0;
+    timer -= 0.75;
   }
 
   // Method to display
   void render() {
     textAlign(CENTER);
+    textSize(36);
     pushMatrix();
     translate(loc.x,loc.y);
     rotate(myAngle);
-    fill(myColor,timer*2);
+    fill(myColor,55+2*timer);
     text(myWord,0,0);
     popMatrix();
   }
