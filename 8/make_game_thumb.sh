@@ -1,7 +1,7 @@
 across=15
 down=15
 gameid=$1
-letters=letters/
+letters=../letters/
 
 # yes letters/grey90.png | head -225 > newboard
 sed -e "s#^#$letters#" < blankboard > newboard
@@ -16,14 +16,14 @@ for tile in $(echo $nodes | tr '|' ' '); do
 	x=$2
 	y=$3
 	line=$((15*x+y))
-	color=white
+	color=purple
 	uc=$(echo $letter | tr a-z A-Z)
 	if [ $uc != $letter ]; then color=red; fi
 	echo "placing letter $letter at $x,$y (line $line)"
 	(
 		echo $((line+1))d
 		echo ${line}a
-		echo ${letters}$color$letter.png
+		echo ${letters}$color$uc.png
 		echo .
 		echo w
 		echo q
@@ -31,4 +31,4 @@ for tile in $(echo $nodes | tr '|' ' '); do
 done
 
 montage +frame +shadow +label -tile 15x15 -geometry 32x32 @newboard board.png
-convert -resize 128x128 board.png $gameid.png
+convert -resize 192x192 board.png $gameid.png
