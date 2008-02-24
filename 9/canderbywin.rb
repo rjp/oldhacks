@@ -42,7 +42,7 @@ File.open("table") { |f|
     }
 }
 
-p table
+max_points = table['Derby'][:points] + 3*(38-table['Derby'][:played])
 
 File.open("fixtures") { |f|
     f.readlines.each { |l|
@@ -60,7 +60,25 @@ File.open("fixtures") { |f|
                 win_for away, table
                 puts "Derby win away"
             else
-                if table[home][:pos] > table['Derby'][:pos] then
+                if table[home][:points] > max_points then # Derby can never overhaul these people
+                    if table[away][:points] > max_points then # or these people so let them draw
+                        puts "#{home} v #{away} non-reachable draw"
+                        draw_for home, away, table
+                    else
+                        puts "#{home} (non-reachable) beat #{away} (reachable)"
+                        win_for home, table
+                        loss_for away, table
+                    end
+                elsif table[away][:points] > max_points then # or these people so let them draw
+                    if table[home][:points] > max_points then # Derby can never overhaul these people
+                        puts "#{home} v #{away} non-reachable draw (2)"
+                        draw_for home, away, table
+                    else
+                        puts "#{away} (non-reachable) beat #{home} (reachable)"
+                        loss_for home, table
+                        win_for away, table
+                    end
+                elsif table[home][:pos] > table['Derby'][:pos] then
                     if table[home][:points] + 4 < table['Derby'][:points] then
                         puts "#{home} beat #{away} because < Derby on pos, points"
                         win_for home, table
