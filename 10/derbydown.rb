@@ -14,7 +14,6 @@ def show(table)
     }
     if table['Derby'][:pos].to_i != 20 then
     	puts "DERBY ARE NOT BOTTOM"
-	exit
     end
     if table[temp[19]][:points] > table['Derby'][:points] + 3*(38-table['Derby'][:played]) then
     	puts "DERBY ARE RELEGATED"
