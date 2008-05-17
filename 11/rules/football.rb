@@ -10,3 +10,6 @@ def points_for_draw(hs, as, hp, ap)
     return 1, 0, 1, 0
 end
 
+def extra_bonus_points(hs, as, hp, ap)
+    return 0, 0, 0, 0
+end
