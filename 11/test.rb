@@ -2,6 +2,7 @@ require 'parseprem'
 require 'yaml'
 require ARGV[0]
 
+history_file = ARGV[1] || 'historyfile.yml'
 
 table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[] } }
 
@@ -96,3 +97,10 @@ table.keys.sort_by{|k|table[k][:pos]}.each_with_index {|t,i|
 #p table['Man Utd'][:history]
 #p table['Wigan'][:history]
 #p table['Derby'][:history]
+history = {}
+table.keys.each { |k|
+    history[k] = table[k][:history]
+}
+File.open(history_file, 'w') {|io|
+    YAML.dump(history, io)
+}
