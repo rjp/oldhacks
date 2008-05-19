@@ -3,7 +3,7 @@ require 'yaml'
 require ARGV[0]
 
 
-table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0, :history=>[], :homewin=>0 } }
+table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[] } }
 
 sort_routine = sort_table(table)
 
@@ -16,6 +16,11 @@ def home_win(table, home, away, hs, as)
 	table[home][:win] = table[home][:win] + 1
 	table[away][:lose] = table[away][:lose] + 1
 	table[home][:homewin] = table[home][:homewin] + 1
+
+    table[home][:result] = 'W'
+    table[away][:result] = 'L'
+    table[home][:p] = [hp,hb]
+    table[away][:p] = [ap,ab]
 end
 
 def away_win(table, home, away, hs, as)
@@ -26,6 +31,10 @@ def away_win(table, home, away, hs, as)
         table[away][:bonus] = table[away][:bonus] + ab
 	table[away][:win] = table[away][:win] + 1
 	table[home][:lose] = table[home][:lose] + 1
+    table[home][:result] = 'L'
+    table[away][:result] = 'W'
+    table[home][:p] = [hp,hb]
+    table[away][:p] = [ap,ab]
 end
 
 def draw(table, home, away, hs, as)
@@ -36,6 +45,10 @@ def draw(table, home, away, hs, as)
         table[away][:bonus] = table[away][:bonus] + ab
 	table[away][:draw] = table[away][:draw] + 1
 	table[home][:draw] = table[home][:draw] + 1
+    table[home][:result] = 'D'
+    table[away][:result] = 'D'
+    table[home][:p] = [hp,hb]
+    table[away][:p] = [ap,ab]
 end
 
 by_date = YAML.load_file('results.yaml')
@@ -67,7 +80,11 @@ games.each { |game|
 
 }
     simple = []
-    table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index {|t,i| table[t][:pos] = i+1; simple.push "#{t} (#{table[t][:points]+table[t][:bonus]})"; table[t][:history].push(i+1)}
+    table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
+        table[t][:pos] = i+1
+        simple.push "#{t} (#{table[t][:points]+table[t][:bonus]})"
+        table[t][:history].push([i+1, table[t][:points], table[t][:bonus], table[t][:result], *table[t][:p]])
+    }
     puts "#{date}: " << simple[0..3].join(',')
 }
 printf "%2s %-16s %3s %4s %3s %s %3s %3s %4s %2s %2s %2s %2s\n", '#', 'Team', 'Pts', 'Bns', 'Tot', 'pos', 'gf', 'ga', 'gd', 'P', 'W', 'D', 'L'
