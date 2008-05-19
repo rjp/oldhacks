@@ -84,7 +84,7 @@ games.each { |game|
     table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
         table[t][:pos] = i+1
         simple.push "#{t} (#{table[t][:points]+table[t][:bonus]})"
-        table[t][:history].push([i+1, table[t][:points], table[t][:bonus], table[t][:result], *table[t][:p]])
+        table[t][:history][table[t][:played]] = [i+1, table[t][:points], table[t][:bonus], table[t][:result], *table[t][:p]]
     }
     puts "#{date}: " << simple[0..3].join(',')
 }
