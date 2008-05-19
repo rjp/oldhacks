@@ -1,3 +1,4 @@
+require 'parseprem'
 require 'yaml'
 require ARGV[0]
 
@@ -32,12 +33,13 @@ games.each { |game|
     hb, ab = extra_bonus_points(hs, as, 0, 0)
     table[home][:bonus] = table[home][:bonus] + hb
     table[away][:bonus] = table[away][:bonus] + ab
-}
     simple = []
     table.keys.sort_by {|h| table[h][:points]+table[h][:bonus] }.reverse.each_with_index {|t,i| table[t][:pos] = i+1; simple.push "#{t} (#{table[t][:points]+table[t][:bonus]})" }
     puts "#{date}: " << simple[0..3].join(',')
+}
 }
 printf "%2s %-20s %3s %4s %3s %s\n", '#', 'Team', 'Pts', 'Bns', 'Tot', 'pos'
 table.keys.sort_by{|k|table[k][:pos]}.each_with_index {|t,i|
     printf "%2d %-20s %3d +%3d %3d %3d\n", i+1, t, table[t][:points], table[t][:bonus], table[t][:points]+table[t][:bonus], table[t][:pos]
 }
+y table
