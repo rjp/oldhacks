@@ -1,10 +1,14 @@
 require 'parseprem'
 require 'yaml'
+
+$initial_points = 0
+$initial_pos = 11
+
 require ARGV[0]
 
 history_file = ARGV[1] || 'historyfile.yml'
 
-table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>1500, :bonus=>0, :pos=>11, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
+table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>$initial_points, :bonus=>0, :pos=>$initial_pos, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
 
 sort_routine = sort_table(table)
 

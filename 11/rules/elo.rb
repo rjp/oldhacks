@@ -1,3 +1,5 @@
+$initial_points = 1500
+	
 def elo(h, a, scored)
     r = h[:points]
     ro = a[:points]

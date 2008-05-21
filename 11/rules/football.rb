@@ -1,16 +1,16 @@
-def points_for_home_win(hs, as, hp, ap)
+def points_for_home_win(hs, as, h, a)
     return 3, 0, 0, 0
 end
 
-def points_for_home_loss(hs, as, hp, ap)
+def points_for_home_loss(hs, as, h, a)
     return 0, 0, 3, 0
 end
 
-def points_for_draw(hs, as, hp, ap)
+def points_for_draw(hs, as, h, a)
     return 1, 0, 1, 0
 end
 
-def extra_bonus_points(hs, as, hp, ap)
+def extra_bonus_points(hs, as, h, a)
 	return 0,0
 end
 
