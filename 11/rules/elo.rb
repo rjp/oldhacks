@@ -1,21 +1,30 @@
-def elo(r, ro, scored)
+def elo(h, a, scored)
+    r = h[:points]
+    ro = a[:points]
     expected = 1.0/(1+10**((ro-r)/400.0))
-    return 32*(scored-expected)
+    offset = 32*(scored-expected)
+    return offset
 end
 
-def points_for_home_win(hs, as, hp, ap)
-    return elo(hp, ap, 1), 0, elo(ap, hp, 0), 0
+def points_for_home_win(hs, as, h, a)
+    nh = elo(h, a, 1)
+    na = elo(a, h, 0)
+    return nh, 0, na, 0
 end
 
-def points_for_home_loss(hs, as, hp, ap)
-    return elo(hp, ap, 0), 0, elo(ap, hp, 1), 0
+def points_for_home_loss(hs, as, h, a)
+    nh = elo(h, a, 0)
+    na = elo(a, h, 1)
+    return nh, 0, na, 0
 end
 
-def points_for_draw(hs, as, hp, ap)
-    return elo(hp, ap, 0.5), 0, elo(ap, hp, 0.5), 0
+def points_for_draw(hs, as, h, a)
+    nh = elo(h, a, 0.5)
+    na = elo(a, h, 0.5)
+    return nh, 0, na, 0
 end
 
-def extra_bonus_points(hs, as, hp, ap)
+def extra_bonus_points(hs, as, h, a)
 	return 0,0
 end
 
