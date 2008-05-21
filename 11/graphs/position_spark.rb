@@ -17,7 +17,7 @@ teams.each_with_index { |team, i|
         points.push(x, y+yo)
     }
     if i%2==0 then
-    svg << SVG::Rect.new(wscale, y-10, wscale*37, 20) { self.style = SVG::Style.new(:fill => '#dddddd')}
+    svg << SVG::Rect.new(wscale, y-10, wscale*37, 20) { self.style = SVG::Style.new(:fill => '#ffdddd')}
     else
     svg << SVG::Rect.new(wscale, y-10, wscale*37, 20) { self.style = SVG::Style.new(:fill => '#ddffdd')}
     end
