@@ -4,12 +4,12 @@ require ARGV[0]
 
 history_file = ARGV[1] || 'historyfile.yml'
 
-table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>11, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[] } }
+table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>1500, :bonus=>0, :pos=>11, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
 
 sort_routine = sort_table(table)
 
 def home_win(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_home_win(hs, as, table[home][:pos], table[away][:pos])
+        hp, hb, ap, ab = points_for_home_win(hs, as, table[home], table[away])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
@@ -25,7 +25,7 @@ def home_win(table, home, away, hs, as)
 end
 
 def away_win(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_home_loss(hs, as, table[home][:pos], table[away][:pos])
+        hp, hb, ap, ab = points_for_home_loss(hs, as, table[home], table[away])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
@@ -40,7 +40,7 @@ def away_win(table, home, away, hs, as)
 end
 
 def draw(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_draw(hs, as, table[home][:pos], table[away][:pos])
+        hp, hb, ap, ab = points_for_draw(hs, as, table[home], table[away])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
@@ -63,7 +63,7 @@ games.each { |game|
     as = as.to_i
     table[home][:played] = table[home][:played]+1
     table[away][:played] = table[away][:played]+1
-    print "h=#{home}/#{table[home][:pos]} a=#{away}/#{table[away][:pos]} s=#{hs}-#{as} "
+    print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as}\n "
     if hs > as then
     	home_win(table, home, away, hs, as)
     elsif as > hs then
@@ -98,7 +98,7 @@ table.keys.sort_by{|k|table[k][:pos]}.each_with_index {|t,i|
 
 #p table['Man Utd'][:history]
 #p table['Wigan'][:history]
-#p table['Derby'][:history]
+#p table['Chelsea'][:history]
 history = {}
 table.keys.each { |k|
     history[k] = table[k][:history]
