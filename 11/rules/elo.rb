@@ -4,9 +4,7 @@ def desc
 	"ELO rankings, avg=1500"
 end
 	
-def elo(h, a, scored)
-    r = h[:points]
-    ro = a[:points]
+def elo(r, ro, scored)
 	# TODO investigate the 400
     expected = 1.0/(1+10**((ro-r)/400.0))
     offset = 32*(scored-expected)
@@ -15,13 +13,18 @@ end
 
 def points(game, hi, ai)
 	home, away, hs, as, date, hhs, ahs = game 
+    h = hi[:points]
+    a = ai[:points]
 
 	if hs > as then 
-		hscore = 1, ascore = 0
+		hscore = 1
+        ascore = 0
 	elsif as > hs then
-		hscore = 0, ascore = 1
+		hscore = 0
+        ascore = 1
 	else
-		hscore = 0.5, ascore = 0.5
+		hscore = 0.5
+        ascore = 0.5
 	end
 		
     nh = elo(h, a, hscore)

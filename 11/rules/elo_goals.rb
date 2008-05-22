@@ -1,16 +1,15 @@
 $initial_points = 1500
 
-def elo(h, a, scored)
-    r = h[:points]
-    ro = a[:points]
+def elo(r, ro, scored)
     expected = 1.0/(1+10**((ro-r)/400.0))
     offset = 32*(scored-expected)
-    puts "s=#{scored} #{h[:name]}=#{r} #{a[:name]}=#{ro} ea=#{expected} r'a=#{offset}"
     return offset
 end
 
 def points(game, hi, ai)
     home, away, hs, as, date, hhs, ahs = game
+    h = hi[:points]
+    a = ai[:points]
 
 	if hs != as then
 	# should the losing team get no points for a loss?
