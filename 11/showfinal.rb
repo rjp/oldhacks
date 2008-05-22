@@ -9,8 +9,8 @@ ARGV.each_with_index {|file, i|
 	table.push Array.new(20)
 	h = YAML.load_file(file)
 	h.keys.each {|team|
-		final = h[team].last[0]
-		table[i][final-1] = team
+		final, points, bonus = h[team].last[0..2]
+		table[i][final-1] = [team, points+bonus]
 	}
 	filenames.push(File.basename(file))
         rules.push(File.basename(file))

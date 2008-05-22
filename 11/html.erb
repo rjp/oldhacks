@@ -19,8 +19,8 @@ small {font-size: x-small}
 </tr>
 % (1..20).each { |i|
 <tr class='r<%= i %>'><td><%= i %></td>
-%  table.collect {|j| j[i-1]}.each { |t| s=t.upcase.gsub(/[^A-Z]/,'')
-    <td class='<%= s %>'> <%= t %> </td>
+%  table.collect {|j| j[i-1]}.each { |t,p| s=t.upcase.gsub(/[^A-Z]/,'')
+    <td class='<%= s %>'> <%= t %> <small>(<%=p.to_i%>)</small></td>
 %  }
 </tr>
 % }
