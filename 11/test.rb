@@ -6,9 +6,11 @@ $initial_pos = 11
 
 require ARGV[0]
 
-# bah, doesn't work
-if Kernel.respond_to?('extra_bonus_points') then
-	die
+ebp = proc { return 9, 5 }
+
+begin
+    ebp = Object.method(:extra_bonus_points)
+rescue => e
 end
 
 history_file = ARGV[1] || 'historyfile.yml'
@@ -40,7 +42,9 @@ def count_goals(team, g_for, g_against)
     team[:against] += g_against
 end
 
-by_date = YAML.load_file('results.yaml')
+input = ENV['LEAGUE'] || 'results.yaml'
+
+by_date = YAML.load_file(input)
 by_date.each { |date, games|
 games.each { |game|
 # Birmingham 4-1 (HT 1-0) Blackburn
@@ -54,7 +58,6 @@ games.each { |game|
     if hg.nil? then hg = hs.to_i; end
     if ag.nil? then ag = as.to_i; end
 
-    puts [hp, hb, ap, ab].join(',')
 
     add_points(table[home], hp, hb)
     add_points(table[away], ap, ab)
@@ -65,12 +68,10 @@ games.each { |game|
     count_goals(table[home], hg, ag)
     count_goals(table[away], ag, hg)
 
-    if Kernel.respond_to?('extra_bonus_points') then
-	    hb, ab = extra_bonus_points(game, table[home], table[away])
-puts "ebp: #{hb},#{ab}"
-	    table[home][:bonus] = table[home][:bonus] + hb
-	    table[away][:bonus] = table[away][:bonus] + ab
-	end
+    ehb, eab = ebp.call(game, table[home], table[away])
+    puts [hp, hb, ap, ab, ehb, eab].join(',')
+    table[home][:bonus] = table[home][:bonus] + ehb
+	table[away][:bonus] = table[away][:bonus] + eab
 }
 
     simple = []
