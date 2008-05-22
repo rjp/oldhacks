@@ -58,9 +58,11 @@ games.each { |game|
     count_goals(table[home], hg, ag)
     count_goals(table[away], ag, hg)
 
-    hb, ab = extra_bonus_points(game, table[home], table[away])
-    table[home][:bonus] = table[home][:bonus] + hb
-    table[away][:bonus] = table[away][:bonus] + ab
+    if Kernel.respond_to?('extra_bonus_points') then
+	    hb, ab = extra_bonus_points(game, table[home], table[away])
+	    table[home][:bonus] = table[home][:bonus] + hb
+	    table[away][:bonus] = table[away][:bonus] + ab
+	end
 }
 
     simple = []
