@@ -8,15 +8,16 @@ def points(game, hi, ai)
     if hhs > ahs then
         hi[:result] = 'W'
         ai[:result] = 'L'
-        return points_for_home_win()
+        hi[:homewin] = hi[:homewin] + 1
+        return [points_for_home_win(), hhs, ahs].flatten
     elsif ahs > hhs then
         ai[:result] = 'W'
         hi[:result] = 'L'
-        return points_for_home_loss()
+        return [points_for_home_loss(), hhs, ahs].flatten
     else
         ai[:result] = 'D'
         hi[:result] = 'D'
-        return points_for_draw()
+        return [points_for_draw(), hhs, ahs].flatten
     end
 end
     

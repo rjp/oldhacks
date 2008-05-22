@@ -20,50 +20,15 @@ def count_results(team)
     end
 end
 
-def home_win(table, game)
-    home, away, hs, as, date, hhs, ahs = game
-        hp, hb, ap, ab = points_for_home_win(hs, as, table[home], table[away])
-        table[home][:points] = table[home][:points] + hp
-        table[home][:bonus] = table[home][:bonus] + hb
-        table[away][:points] = table[away][:points] + ap
-        table[away][:bonus] = table[away][:bonus] + ab
-	table[home][:win] = table[home][:win] + 1
-	table[away][:lose] = table[away][:lose] + 1
-	table[home][:homewin] = table[home][:homewin] + 1
-    table[home][:result] = 'W'
-    table[away][:result] = 'L'
-    table[home][:p] = [hp,hb]
-    table[away][:p] = [ap,ab]
-    puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
+def add_points(team, points, bonus)
+    team[:points] = team[:points] + points
+    team[:bonus] = team[:bonus] + bonus
+    team[:p] = [points,bonus]
 end
 
-def away_win(table, game)
-    home, away, hs, as, date, hhs, ahs = game
-        hp, hb, ap, ab = points_for_home_loss(hs, as, table[home], table[away])
-        table[home][:points] = table[home][:points] + hp
-        table[home][:bonus] = table[home][:bonus] + hb
-        table[away][:points] = table[away][:points] + ap
-        table[away][:bonus] = table[away][:bonus] + ab
-	table[away][:win] = table[away][:win] + 1
-	table[home][:lose] = table[home][:lose] + 1
-    table[home][:result] = 'L'
-    table[away][:result] = 'W'
-    table[home][:p] = [hp,hb]
-    table[away][:p] = [ap,ab]
-    puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
-end
-
-def draw(table, game)
-    home, away, hs, as, date, hhs, ahs = game
-        hp, hb, ap, ab = points_for_draw(game, table[home], table[away])
-        table[home][:points] = table[home][:points] + hp
-        table[home][:bonus] = table[home][:bonus] + hb
-        table[away][:points] = table[away][:points] + ap
-        table[away][:bonus] = table[away][:bonus] + ab
-
-    table[home][:p] = [hp,hb]
-    table[away][:p] = [ap,ab]
-    puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
+def count_goals(team, g_for, g_against)
+    team[:for] += g_for
+    team[:against] += g_against
 end
 
 by_date = YAML.load_file('results.yaml')
@@ -80,23 +45,18 @@ games.each { |game|
     table[away][:played] = table[away][:played]+1
     print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as}\n "
 
-        hp, hb, ap, ab = points(game, table[home], table[away])
-        table[home][:points] = table[home][:points] + hp
-        table[home][:bonus] = table[home][:bonus] + hb
-        table[away][:points] = table[away][:points] + ap
-        table[away][:bonus] = table[away][:bonus] + ab
+    hp, hb, ap, ab, hg, ag = points(game, table[home], table[away])
+    if hg.nil? then hg = hs; end
+    if ag.nil? then ag = as; end
 
-    table[home][:p] = [hp,hb]
-    table[away][:p] = [ap,ab]
+    add_points(table[home], hp, hb)
+    add_points(table[away], ap, ab)
 
     count_results(table[home])
     count_results(table[away])
 
-# this will be wrong for rules/halftime
-    table[home][:for] += hs
-    table[home][:against] += as
-    table[away][:for] += as
-    table[away][:against] += hs
+    count_goals(table[home], hg, ag)
+    count_goals(table[away], ag, hg)
 
     hb, ab = extra_bonus_points(game, table[home], table[away])
     table[home][:bonus] = table[home][:bonus] + hb
