@@ -1,5 +1,9 @@
 $initial_points = 1500
 
+def desc
+    "ELO rankings, SA=goals scored"
+end
+
 def elo(r, ro, scored)
     expected = 1.0/(1+10**((ro-r)/400.0))
     offset = 32*(scored-expected)

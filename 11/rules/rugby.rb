@@ -1,3 +1,7 @@
+def desc
+    "4pt for win, 2pt for draw, +1 for >4 goals, +1 for being within 1"
+end
+
 def points(game, hi, ai)
 	home, away, hs, as, date, hhs, ahs = game
 
