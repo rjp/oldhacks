@@ -1,5 +1,8 @@
 require 'yaml'
+require 'erb'
 
+desc = YAML.load_file('rules.yaml')
+rules = []
 filenames = []
 table = []
 ARGV.each_with_index {|file, i|
@@ -10,8 +13,13 @@ ARGV.each_with_index {|file, i|
 		table[i][final-1] = team
 	}
 	filenames.push(File.basename(file))
+        rules.push(File.basename(file))
 }
 if ENV['HTML'] then
+    template = File.read('html.erb')
+    tt = ERB.new(template, nil, '%')
+    puts tt.result
+elsif 1==2 then
 puts '<table border=1><tr><th></th><th>' << filenames.join('</th><th>') << '</th></tr>'
 (1..20).each { |i|
 	puts "<tr class='r#{i}'><td>#{i}</td><td>" << [table.collect {|j| j[i-1]}].join('</td><td>') << '</td></tr>'
