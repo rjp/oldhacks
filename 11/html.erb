@@ -5,7 +5,9 @@
 .r19 {background-color: #ffbbbb}
 .r20 {background-color: #ffbbbb}
 small {font-size: x-small}
+.hilite {background-color: #ffff88}
 </style>
+<script src="/rjp/jquery.js" type="text/javascript"></script>
 </head>
 <body>
 <table border='1'>
@@ -17,10 +19,18 @@ small {font-size: x-small}
 </tr>
 % (1..20).each { |i|
 <tr class='r<%= i %>'><td><%= i %></td>
-%  table.collect {|j| j[i-1]}.each { |t|
-    <td id='<%= t %>'> <%= t %> </td>
+%  table.collect {|j| j[i-1]}.each { |t| s=t.upcase.gsub(/[^A-Z]/,'')
+    <td class='<%= s %>'> <%= t %> </td>
 %  }
 </tr>
 % }
-</table></body></html>
-
+</table>
+<script>
+$('td').click(function() {
+        var set = $(this).hasClass('hilite');
+        $('td').removeClass('hilite');
+        if (set) { return; }
+        $('td.'+$(this).attr('class')).addClass('hilite');
+});
+</script>
+</body></html>
