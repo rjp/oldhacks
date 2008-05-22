@@ -6,6 +6,11 @@ $initial_pos = 11
 
 require ARGV[0]
 
+# bah, doesn't work
+if Kernel.respond_to?('extra_bonus_points') then
+	die
+end
+
 history_file = ARGV[1] || 'historyfile.yml'
 
 table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>$initial_points, :bonus=>0, :pos=>$initial_pos, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
@@ -40,18 +45,16 @@ by_date.each { |date, games|
 games.each { |game|
 # Birmingham 4-1 (HT 1-0) Blackburn
     all, home, hs, as, hhs, ahs, away = game.match(%r{(.*?) (\d+)-(\d+) \(HT (\d+)-(\d+).*?\) (.+)}).to_a
-    hs = hs.to_i
-    as = as.to_i
-    hhs = hhs.to_i
-    ahs = ahs.to_i
-    game = [ home, away, hs, as, date, hhs, ahs ]
+    game = [ home, away, hs.to_i, as.to_i, date, hhs.to_i, ahs.to_i ]
     table[home][:played] = table[home][:played]+1
     table[away][:played] = table[away][:played]+1
-    print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as}\n "
+    print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as} "
 
     hp, hb, ap, ab, hg, ag = points(game, table[home], table[away])
-    if hg.nil? then hg = hs; end
-    if ag.nil? then ag = as; end
+    if hg.nil? then hg = hs.to_i; end
+    if ag.nil? then ag = as.to_i; end
+
+    puts [hp, hb, ap, ab].join(',')
 
     add_points(table[home], hp, hb)
     add_points(table[away], ap, ab)
@@ -64,6 +67,7 @@ games.each { |game|
 
     if Kernel.respond_to?('extra_bonus_points') then
 	    hb, ab = extra_bonus_points(game, table[home], table[away])
+puts "ebp: #{hb},#{ab}"
 	    table[home][:bonus] = table[home][:bonus] + hb
 	    table[away][:bonus] = table[away][:bonus] + ab
 	end
