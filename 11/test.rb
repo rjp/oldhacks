@@ -6,7 +6,7 @@ $initial_pos = 11
 
 require ARGV[0]
 
-ebp = proc { return 9, 5 }
+ebp = proc { return 0, 0 }
 
 begin
     ebp = Object.method(:extra_bonus_points)
@@ -57,7 +57,6 @@ games.each { |game|
     hp, hb, ap, ab, hg, ag = points(game, table[home], table[away])
     if hg.nil? then hg = hs.to_i; end
     if ag.nil? then ag = as.to_i; end
-
 
     add_points(table[home], hp, hb)
     add_points(table[away], ap, ab)
