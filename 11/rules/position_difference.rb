@@ -1,27 +1,21 @@
-def points_for_home_win(hs, as, h, a)
-	if h[:pos] > a[:pos] then 
-		return 3, 0, 0, 0    
+def desc
+	"bonus point for beating a higher opponent"
+end
+
+def points(game, hi, ai)
+	home, away, hs, as, date, hhs, ahs = game
+
+	x, y = 0, 0
+
+	if hs > as then
+		p, q = 3, 0
+		if hi[:pos] > ai[:pos] then x = 1; end
+	elsif as > hs then
+		p, q = 0, 3
+		if ai[:pos] > hi[:pos] then y = 1; end
 	else
-		return 2, 0, 0, 0
+		p, q = 1, 1
 	end
-end
 
-def points_for_home_loss(hs, as, h, a)
-	if a[:pos] > h[:pos] then 
-		return 0, 0, 3, 0
-	else
-		return 0, 0, 2, 0
-	end
-end
-
-def points_for_draw(hs, as, h, a)
-    return 1, 0, 1, 0
-end
-
-def extra_bonus_points(hs, as, h, a)
-	return 0,0
-end
-
-def sort_table(table)
-	proc {|t| 1000*(table[t][:points]+table[t][:bonus]) + (table[t][:for] - table[t][:against]) }
+	return p, x, q, y
 end

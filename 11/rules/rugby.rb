@@ -1,26 +1,23 @@
-def points_for_home_win(hs, as, h, a)
-    v = [4, 0, 0, 0]
-    if as.to_i+1 >= hs.to_i then v[3] = 1; end
-    return *v
+def points(game, hi, ai)
+	home, away, hs, as, date, hhs, ahs = game
+
+	p, q = 0, 0
+	if hs > as then
+   		if as+1 >= hs then q = 1; end
+		return 4, 0, 0, q
+	elsif as > hs then
+   		if hs+1 >= as then p = 1; end
+		return 0, p, 4, 0
+	else
+		return 2, 0, 2, 0
+	end
 end
 
-def points_for_home_loss(hs, as, h, a)
-    v = [0, 0, 4, 0]
-    if hs.to_i+1 >= as.to_i then v[1] = 1; end
-    return *v
-end
-
-def points_for_draw(hs, as, h, a)
-    return 2, 0, 2, 0
-end
-
-def extra_bonus_points(hs, as, h, a)
+def extra_bonus_points(game, hi, ai)
+	home, away, hs, as, date, hhs, ahs = game
+	
     hb, ab = 0, 0
-    if hs.to_i >= 4 then hb = 1; end
-    if as.to_i >= 4 then ab = 1; end
+    if hs >= 4 then hb = 1; end
+    if as >= 4 then ab = 1; end
     return hb, ab
-end
-
-def sort_table(table)
-	proc {|t| 1000*(table[t][:points]+table[t][:bonus]) + (table[t][:for] - table[t][:against]) }
 end

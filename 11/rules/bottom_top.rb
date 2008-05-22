@@ -1,24 +1,34 @@
-def points_for_home_win(hs, as, home, away)
-	if away[:pos] < 11 then 
-		return 4, 0, 0, 0    
+def desc
+	"2pts for beating bottom half, 4pts for top half"
+end
+
+def points(game, hi, ai)
+    home, away, hs, as, date, hhs, ahs = game
+
+	if hs > as then
+		hi[:result] = 'W'
+		ai[:result] = 'L'
+		if ai[:pos] < 11 then
+			return 4, 0, 0, 0
+		else
+			return 2, 0, 0, 0
+		end
+	elsif as > hs then
+		ai[:result] = 'W'
+		hi[:result] = 'L'
+		if hi[:pos] < 11 then 
+			return 0, 0, 4, 0
+		else
+			return 0, 0, 2, 0
+		end
 	else
-		return 2, 0, 0, 0
+		ai[:result] = 'D'
+		hi[:result] = 'D'
+		return 1, 0, 1, 0
 	end
 end
 
-def points_for_home_loss(hs, as, home, away)
-	if home[:pos] < 11 then 
-		return 0, 0, 4, 0
-	else
-		return 0, 0, 2, 0
-	end
-end
-
-def points_for_draw(hs, as, home, away)
-    return 1, 0, 1, 0
-end
-
-def extra_bonus_points(hs, as, home, away)
+def extra_bonus_points(game, hi, ai)
 	return 0,0
 end
 

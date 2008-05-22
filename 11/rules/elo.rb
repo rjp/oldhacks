@@ -1,32 +1,36 @@
 $initial_points = 1500
+
+def desc
+	"ELO rankings, avg=1500"
+end
 	
 def elo(h, a, scored)
     r = h[:points]
     ro = a[:points]
+	# TODO investigate the 400
     expected = 1.0/(1+10**((ro-r)/400.0))
     offset = 32*(scored-expected)
     return offset
 end
 
-def points_for_home_win(hs, as, h, a)
-    nh = elo(h, a, 1)
-    na = elo(a, h, 0)
+def points(game, hi, ai)
+	home, away, hs, as, date, hhs, ahs = game 
+
+	if hs > as then 
+		hscore = 1, ascore = 0
+	elsif as > hs then
+		hscore = 0, ascore = 1
+	else
+		hscore = 0.5, ascore = 0.5
+	end
+		
+    nh = elo(h, a, hscore)
+    na = elo(a, h, ascore)
+
     return nh, 0, na, 0
 end
 
-def points_for_home_loss(hs, as, h, a)
-    nh = elo(h, a, 0)
-    na = elo(a, h, 1)
-    return nh, 0, na, 0
-end
-
-def points_for_draw(hs, as, h, a)
-    nh = elo(h, a, 0.5)
-    na = elo(a, h, 0.5)
-    return nh, 0, na, 0
-end
-
-def extra_bonus_points(hs, as, h, a)
+def extra_bonus_points(game, hi, ai)
 	return 0,0
 end
 

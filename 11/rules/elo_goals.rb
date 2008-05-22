@@ -9,25 +9,22 @@ def elo(h, a, scored)
     return offset
 end
 
-def points_for_home_win(hs, as, h, a)
-    nh = elo(h, a, hs-as)
-    na = elo(a, h, as-hs)
+def points(game, hi, ai)
+    home, away, hs, as, date, hhs, ahs = game
+
+	if hs != as then
+	# should the losing team get no points for a loss?
+	# or is that yet another ruleset?
+	    nh = elo(h, a, hs-as)
+   		na = elo(a, h, as-hs)
+	else 
+    	nh = elo(h, a, 0.5)
+	    na = elo(a, h, 0.5)
+	end
     return nh, 0, na, 0
 end
 
-def points_for_home_loss(hs, as, h, a)
-    nh = elo(h, a, hs-as)
-    na = elo(a, h, as-hs)
-    return nh, 0, na, 0
-end
-
-def points_for_draw(hs, as, h, a)
-    nh = elo(h, a, 0.5)
-    na = elo(a, h, 0.5)
-    return nh, 0, na, 0
-end
-
-def extra_bonus_points(hs, as, h, a)
+def extra_bonus_points(game, hi, ai)
 	return 0,0
 end
 
