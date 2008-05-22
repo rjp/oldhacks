@@ -12,7 +12,16 @@ table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :point
 
 sort_routine = sort_table(table)
 
-def home_win(table, home, away, hs, as)
+def count_results(team)
+    case team[:result]
+        when 'W' then team[:win] = team[:win] + 1
+        when 'L' then team[:lose] = team[:lose] + 1
+        when 'D' then team[:draw] = team[:draw] + 1
+    end
+end
+
+def home_win(table, game)
+    home, away, hs, as, date, hhs, ahs = game
         hp, hb, ap, ab = points_for_home_win(hs, as, table[home], table[away])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
@@ -28,7 +37,8 @@ def home_win(table, home, away, hs, as)
     puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
 end
 
-def away_win(table, home, away, hs, as)
+def away_win(table, game)
+    home, away, hs, as, date, hhs, ahs = game
         hp, hb, ap, ab = points_for_home_loss(hs, as, table[home], table[away])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
@@ -43,16 +53,14 @@ def away_win(table, home, away, hs, as)
     puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
 end
 
-def draw(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_draw(hs, as, table[home], table[away])
+def draw(table, game)
+    home, away, hs, as, date, hhs, ahs = game
+        hp, hb, ap, ab = points_for_draw(game, table[home], table[away])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
         table[away][:bonus] = table[away][:bonus] + ab
-	table[away][:draw] = table[away][:draw] + 1
-	table[home][:draw] = table[home][:draw] + 1
-    table[home][:result] = 'D'
-    table[away][:result] = 'D'
+
     table[home][:p] = [hp,hb]
     table[away][:p] = [ap,ab]
     puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
@@ -62,30 +70,39 @@ by_date = YAML.load_file('results.yaml')
 by_date.each { |date, games|
 games.each { |game|
 # Birmingham 4-1 (HT 1-0) Blackburn
-    all, home, hs, as, away = game.match(%r{(.*?) (\d+)-(\d+) \(.*?\) (.+)}).to_a
+    all, home, hs, as, hhs, ahs, away = game.match(%r{(.*?) (\d+)-(\d+) \(HT (\d+)-(\d+).*?\) (.+)}).to_a
     hs = hs.to_i
     as = as.to_i
+    hhs = hhs.to_i
+    ahs = ahs.to_i
+    game = [ home, away, hs, as, date, hhs, ahs ]
     table[home][:played] = table[home][:played]+1
     table[away][:played] = table[away][:played]+1
     print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as}\n "
-    if hs > as then
-    	home_win(table, home, away, hs, as)
-    elsif as > hs then
-    	away_win(table, home, away, hs, as)
-    else
-    	draw(table, home, away, hs, as)
-    end
 
+        hp, hb, ap, ab = points(game, table[home], table[away])
+        table[home][:points] = table[home][:points] + hp
+        table[home][:bonus] = table[home][:bonus] + hb
+        table[away][:points] = table[away][:points] + ap
+        table[away][:bonus] = table[away][:bonus] + ab
+
+    table[home][:p] = [hp,hb]
+    table[away][:p] = [ap,ab]
+
+    count_results(table[home])
+    count_results(table[away])
+
+# this will be wrong for rules/halftime
     table[home][:for] += hs
     table[home][:against] += as
     table[away][:for] += as
     table[away][:against] += hs
 
-    hb, ab = extra_bonus_points(hs, as, 0, 0)
+    hb, ab = extra_bonus_points(game, table[home], table[away])
     table[home][:bonus] = table[home][:bonus] + hb
     table[away][:bonus] = table[away][:bonus] + ab
-
 }
+
     simple = []
     table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
         table[t][:pos] = i+1
