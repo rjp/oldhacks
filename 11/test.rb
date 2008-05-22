@@ -10,7 +10,11 @@ history_file = ARGV[1] || 'historyfile.yml'
 
 table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>$initial_points, :bonus=>0, :pos=>$initial_pos, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
 
-sort_routine = sort_table(table)
+sort_routine = proc {|t| 1000*(table[t][:points]+table[t][:bonus]) + (table[t][:for] - table[t][:against]) }
+
+if Kernel.respond_to?('sort_table') then
+	sort_routine = sort_table(table)
+end
 
 def count_results(team)
     case team[:result]
