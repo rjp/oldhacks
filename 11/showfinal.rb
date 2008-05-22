@@ -14,7 +14,7 @@ ARGV.each_with_index {|file, i|
 if ENV['HTML'] then
 puts '<table border=1><tr><th></th><th>' << filenames.join('</th><th>') << '</th></tr>'
 (1..20).each { |i|
-	puts "<tr style='r#{i}'><td>#{i}</td><td>" << [table.collect {|j| j[i-1]}].join('</td><td>') << '</td></tr>'
+	puts "<tr class='r#{i}'><td>#{i}</td><td>" << [table.collect {|j| j[i-1]}].join('</td><td>') << '</td></tr>'
 }
 puts '</table>'
 else
