@@ -1,0 +1,26 @@
+<html><head><title>Results</title>
+<style>
+.r1 {background-color: #bbffbb}
+.r18 {background-color: #ffbbbb}
+.r19 {background-color: #ffbbbb}
+.r20 {background-color: #ffbbbb}
+small {font-size: x-small}
+</style>
+</head>
+<body>
+<table border='1'>
+<tr>
+<th></th>
+% rules.each {|ruleset|
+    <th> <%= ruleset %> <br/><small><%= desc[ruleset] %></small></th>
+% }
+</tr>
+% (1..20).each { |i|
+<tr class='r<%= i %>'><td><%= i %></td>
+%  table.collect {|j| j[i-1]}.each { |t|
+    <td id='<%= t %>'> <%= t %> </td>
+%  }
+</tr>
+% }
+</table></body></html>
+
