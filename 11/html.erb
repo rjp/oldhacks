@@ -1,9 +1,9 @@
 <html><head><title>Results</title>
 <style>
 .r1 {background-color: #bbffbb}
-.r18 {background-color: #ffbbbb}
-.r19 {background-color: #ffbbbb}
-.r20 {background-color: #ffbbbb}
+% (1-relegated..0).each { |k|
+.r<%=size+k%> {background-color: #ffbbbb}
+% }
 small {font-size: x-small}
 .hilite {background-color: #ffff88}
 </style>
@@ -17,7 +17,7 @@ small {font-size: x-small}
     <th> <%= ruleset %> <br/><small><%= desc[ruleset] %></small></th>
 % }
 </tr>
-% (1..20).each { |i|
+% (1..size).each { |i|
 <tr class='r<%= i %>'><td><%= i %></td>
 %  table.collect {|j| j[i-1]}.each { |t,p| s=t.upcase.gsub(/[^A-Z]/,'')
     <td class='<%= s %>'> <%= t %> <small>(<%=p.to_i%>)</small></td>
