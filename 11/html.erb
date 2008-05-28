@@ -14,7 +14,7 @@ small {font-size: x-small}
 <tr>
 <th></th>
 % rules.each {|ruleset|
-    <th> <%= ruleset %> <br/><small><%= desc[ruleset] %></small></th>
+    <th> <a href="/rjp/tmp/fg/<%= ruleset %>.rb.txt"><%= ruleset %></a> <br/><small><%= desc[ruleset] %></small></th>
 % }
 </tr>
 % (1..size).each { |i|
