@@ -13,6 +13,13 @@ begin
 rescue => e
 end
 
+pp = proc { }
+begin
+    pp = Object.method(:postprocess)
+rescue => e
+end
+
+
 history_file = ARGV[1] || 'historyfile.yml'
 
 table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>$initial_points, :bonus=>0, :pos=>$initial_pos, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
@@ -55,22 +62,26 @@ games.each { |game|
     print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as} "
 
     hp, hb, ap, ab, hg, ag = points(game, table[home], table[away])
-    if hg.nil? then hg = hs.to_i; end
-    if ag.nil? then ag = as.to_i; end
 
-    add_points(table[home], hp, hb)
-    add_points(table[away], ap, ab)
+	unless hp.nil? then
 
-    count_results(table[home])
-    count_results(table[away])
-
-    count_goals(table[home], hg, ag)
-    count_goals(table[away], ag, hg)
-
-    ehb, eab = ebp.call(game, table[home], table[away])
-    puts [hp, hb, ap, ab, ehb, eab].join(',')
-    table[home][:bonus] = table[home][:bonus] + ehb
-	table[away][:bonus] = table[away][:bonus] + eab
+	    if hg.nil? then hg = hs.to_i; end
+	    if ag.nil? then ag = as.to_i; end
+	
+	    add_points(table[home], hp, hb)
+	    add_points(table[away], ap, ab)
+	
+	    count_results(table[home])
+	    count_results(table[away])
+	
+	    count_goals(table[home], hg, ag)
+	    count_goals(table[away], ag, hg)
+	
+	    ehb, eab = ebp.call(game, table[home], table[away])
+	    puts [hp, hb, ap, ab, ehb, eab].join(',')
+	    table[home][:bonus] = table[home][:bonus] + ehb
+		table[away][:bonus] = table[away][:bonus] + eab
+	end
 }
 
     simple = []
@@ -81,6 +92,9 @@ games.each { |game|
     }
     puts "#{date}: " << simple[0..3].join(',')
 }
+
+pp.call(table,sort_routine)
+
 printf "%2s %-16s %3s %4s %3s %s %3s %3s %4s %2s %2s %2s %2s\n", '#', 'Team', 'Pts', 'Bns', 'Tot', 'pos', 'gf', 'ga', 'gd', 'P', 'W', 'D', 'L'
 table.keys.sort_by{|k|table[k][:pos]}.each_with_index {|t,i|
     printf "%2d %-16s %3d +%3d %3d %3d %3d %3d %4d %2d %2d %2d %2d %2d %2d\n", i+1, t, table[t][:points], table[t][:bonus], table[t][:points]+table[t][:bonus], table[t][:pos], table[t][:for], table[t][:against], table[t][:for]-table[t][:against], table[t][:played], table[t][:win], table[t][:draw], table[t][:lose], table[t][:homewin], table[t][:win]-table[t][:homewin]
