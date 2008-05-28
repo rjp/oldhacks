@@ -7,7 +7,7 @@ rules = []
 filenames = []
 table = []
 ARGV.each_with_index {|file, i|
-	table.push Array.new(20)
+	table.push Array.new(25)
 	h = YAML.load_file(file)
 	as = h.keys.size
 
@@ -23,6 +23,7 @@ ARGV.each_with_index {|file, i|
 	h.keys.each {|team|
 		final, points, bonus = h[team].last[0..2]
 		table[i][final-1] = [team, points+bonus]
+        if team.nil? then puts "team=nil"; exit; end
 	}
 	filenames.push(File.basename(file))
         rules.push(File.basename(file))
