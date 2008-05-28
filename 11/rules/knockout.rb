@@ -21,7 +21,6 @@ prev.flatten.each_with_index {|n,i|
 	$pool[n] = i%4
 }
 
-
 def points(game, hi, ai)
     home, away, hs, as, date, hhs, ahs = game
 	if $pool[home] != $pool[away] then
@@ -76,4 +75,27 @@ def postprocess(table, sort_routine)
 		pools[$pool[t]].push t # table[t]
 	}
 	p pools
+	(0..4).each { |i|
+		a,b,c,d = pools[0][i], pools[1][i], pools[2][i], pools[3][i]
+		pa, pd = quickmatch(a,d)
+		pb, pc = quickmatch(b,c)
+	
+		sf1 = pa < pd ? a : d
+		sf2 = pb < pc ? b : c
+		sf3 = pa < pd ? d : a
+		sf4 = pb < pc ? c : b
+
+		f,s = quickmatch(sf1, sf2)
+		(w,l) = f<s ? [sf1,sf2] : [sf2,sf1]
+
+		tp,fp = quickmatch(sf3,sf4)
+		puts "#{sf3} #{tp}-#{fp} #{sf4}"
+		(tw,tl) = tp<fp ? [sf3,sf4] : [sf4,sf3]
+
+		puts "results: 1: #{w} 2: #{l} 3: #{tw} 4: #{tl}"
+		table[w][:pos] = 1+i*4
+		table[l][:pos] = 2+i*4
+		table[tw][:pos] = 3+i*4
+		table[tl][:pos] = 4+i*4
+	}
 end
