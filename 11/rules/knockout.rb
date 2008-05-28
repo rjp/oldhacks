@@ -5,7 +5,7 @@ def desc
 end
 
 $pool = {}
-$latergames = []
+$latergames = Hash.new { |h,k| h[k]=[] }
 list = []
 
 t = YAML.load_file('history/0607/football') # league positions
@@ -25,7 +25,8 @@ prev.flatten.each_with_index {|n,i|
 def points(game, hi, ai)
     home, away, hs, as, date, hhs, ahs = game
 	if $pool[home] != $pool[away] then
-		$latergames.push game
+		key = [home,away].sort.join(':')
+		$latergames[key].push game
 		return nil
 	end
 
