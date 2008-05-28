@@ -18,7 +18,7 @@ newteams = list.flatten.uniq - prev
 prev.push newteams.sort
 
 prev.flatten.each_with_index {|n,i|
-	$pool[n] = i%5
+	$pool[n] = i%4
 }
 
 
@@ -46,8 +46,7 @@ def points(game, hi, ai)
 end
 
 def postprocess(table, sort_routine)
-	p $latergames
-	pools = Array.new(5) {[]}
+	pools = Array.new(4) {[]}
     table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
 		pools[$pool[t]].push t # table[t]
 	}
