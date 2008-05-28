@@ -4,7 +4,7 @@ require 'time'
 spans = Hash.new {|h,k| h[k] = []}
 timeon = Hash.new(0)
 
-min, max = 1000000000,-1
+min, max = 10000000000,-1
 
 $stdin.readlines.each { |line|
 	userid, on, off = line.split(' ')
