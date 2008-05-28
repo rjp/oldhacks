@@ -24,7 +24,7 @@ colours = %w{red blue green magenta cyan}
 col_index = 0
 
 svg = SVG.new('8in', '4in')
-spans.keys.sort_by {|k| timeon[k]}.reverse.each_with_index { |user, i|
+spans.keys.sort_by {|k| timeon[k].to_f/(max-min)}.reverse.each_with_index { |user, i|
 	y = 4 + 3*i
 	puts "plotting #{user} at y=#{y}, s=#{scale}"
 	spans[user].each { |s,e|
