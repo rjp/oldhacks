@@ -14,12 +14,14 @@ small {font-size: x-small}
 <tr>
 <th></th>
 % rules.each {|ruleset|
-    <th> <%= ruleset %> <br/><small><%= desc[ruleset] %></small></th>
+    <th> <a href="/rjp/tmp/fg/<%= ruleset %>.rb.txt"><%= ruleset %></a> <br/><small><%= desc[ruleset] %></small></th>
 % }
 </tr>
 % (1..size).each { |i|
 <tr class='r<%= i %>'><td><%= i %></td>
-%  table.collect {|j| j[i-1]}.each { |t,p| s=t.upcase.gsub(/[^A-Z]/,'')
+%  table.collect {|j| j[i-1]}.each { |t,p| 
+% if t.nil? then t = 'monkey'; end
+%   s=t.upcase.gsub(/[^A-Z]/,'')
     <td class='<%= s %>'> <%= t %> <small>(<%=p.to_i%>)</small></td>
 %  }
 </tr>

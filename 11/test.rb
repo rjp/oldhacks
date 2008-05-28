@@ -59,7 +59,7 @@ games.each { |game|
     game = [ home, away, hs.to_i, as.to_i, date, hhs.to_i, ahs.to_i ]
     table[home][:played] = table[home][:played]+1
     table[away][:played] = table[away][:played]+1
-    print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as} "
+    print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as} (#{hhs}-#{ahs}) "
 
     hp, hb, ap, ab, hg, ag = points(game, table[home], table[away])
 
