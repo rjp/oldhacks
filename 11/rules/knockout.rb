@@ -45,6 +45,31 @@ def points(game, hi, ai)
     end
 end
 
+def quickmatch(h, a)
+	key = [h,a].sort.join(':')
+	sc = Hash.new { |i,k| i[k] = {:g=>0,:a=>0} }
+	$latergames[key].each { |g|
+    		home, away, hs, as, date, hhs, ahs = g
+		sc[home][:g] = sc[home][:g] + hs
+		sc[away][:g] = sc[away][:g] + as
+		sc[away][:a] = sc[away][:a] + as
+	}
+	puts "#{h} #{sc[h][:g]}-#{sc[a][:g]} (A:#{sc[h][:a]}-#{sc[a][:a]}) #{a}"
+	if sc[h][:g] > sc[a][:g] then
+		return 1, 2
+	elsif sc[a][:g] > sc[h][:g] then
+		return 2, 1
+	else
+		if sc[h][:a] > sc[a][:a] then
+			return 1, 2
+		else
+			return 2, 1
+		end
+	end
+	puts "can't get here"
+end
+
+
 def postprocess(table, sort_routine)
 	pools = Array.new(4) {[]}
     table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
