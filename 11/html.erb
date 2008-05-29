@@ -1,5 +1,6 @@
 <html><head><title>Results</title>
 <style>
+th {max-width: 10em}
 .r1 {background-color: #bbffbb}
 % (1-relegated..0).each { |k|
 .r<%=size+k%> {background-color: #ffbbbb}
@@ -20,7 +21,8 @@ small {font-size: x-small}
 % (1..size).each { |i|
 <tr class='r<%= i %>'><td><%= i %></td>
 %  table.collect {|j| j[i-1]}.each { |t,p| s=t.upcase.gsub(/[^A-Z]/,'')
-    <td class='<%= s %>'> <%= t %> <small>(<%=p.to_i%>)</small></td>
+%  short = t.gsub(/[aeiou]/,'').upcase.gsub(/[^A-Z]/,'').gsub(/(.)\1\1(.)/,"\1\1\2")[0..2]
+    <td class='<%= s %>'> <%= t %> <small>(<%=p%>) <%=short%></small></td>
 %  }
 </tr>
 % }
