@@ -3,12 +3,12 @@ require 'yaml'
 require ARGV[0]
 
 
-table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>0, :for=>0, :against=>0} }
+table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0} }
 
 sort_routine = sort_table(table)
 
 def home_win(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_home_win(hs, as, 0, 0)
+        hp, hb, ap, ab = points_for_home_win(hs, as, table[home][:pos], table[away][:pos])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
@@ -16,7 +16,7 @@ def home_win(table, home, away, hs, as)
 end
 
 def away_win(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_home_loss(hs, as, 0, 0)
+        hp, hb, ap, ab = points_for_home_loss(hs, as, table[home][:pos], table[away][:pos])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
@@ -24,7 +24,7 @@ def away_win(table, home, away, hs, as)
 end
 
 def draw(table, home, away, hs, as)
-        hp, hb, ap, ab = points_for_draw(hs, as, 0, 0)
+        hp, hb, ap, ab = points_for_draw(hs, as, table[home][:pos], table[away][:pos])
         table[home][:points] = table[home][:points] + hp
         table[home][:bonus] = table[home][:bonus] + hb
         table[away][:points] = table[away][:points] + ap
