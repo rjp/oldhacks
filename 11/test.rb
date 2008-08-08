@@ -3,7 +3,7 @@ require 'yaml'
 require ARGV[0]
 
 
-table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0, :history=>[] } }
+table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0, :history=>[], :homewin=>0 } }
 
 sort_routine = sort_table(table)
 
@@ -15,6 +15,7 @@ def home_win(table, home, away, hs, as)
         table[away][:bonus] = table[away][:bonus] + ab
 	table[home][:win] = table[home][:win] + 1
 	table[away][:lose] = table[away][:lose] + 1
+	table[home][:homewin] = table[home][:homewin] + 1
 end
 
 def away_win(table, home, away, hs, as)
@@ -71,9 +72,10 @@ games.each { |game|
 }
 printf "%2s %-16s %3s %4s %3s %s %3s %3s %4s %2s %2s %2s %2s\n", '#', 'Team', 'Pts', 'Bns', 'Tot', 'pos', 'gf', 'ga', 'gd', 'P', 'W', 'D', 'L'
 table.keys.sort_by{|k|table[k][:pos]}.each_with_index {|t,i|
-    printf "%2d %-16s %3d +%3d %3d %3d %3d %3d %4d %2d %2d %2d %2d\n", i+1, t, table[t][:points], table[t][:bonus], table[t][:points]+table[t][:bonus], table[t][:pos], table[t][:for], table[t][:against], table[t][:for]-table[t][:against], table[t][:played], table[t][:win], table[t][:draw], table[t][:lose]
+    printf "%2d %-16s %3d +%3d %3d %3d %3d %3d %4d %2d %2d %2d %2d %2d %2d\n", i+1, t, table[t][:points], table[t][:bonus], table[t][:points]+table[t][:bonus], table[t][:pos], table[t][:for], table[t][:against], table[t][:for]-table[t][:against], table[t][:played], table[t][:win], table[t][:draw], table[t][:lose], table[t][:homewin], table[t][:played]-table[t][:draw]-table[t][:homewin]
+
 }
 
-p table['Man Utd'][:history]
-p table['Wigan'][:history]
-p table['Derby'][:history]
+#p table['Man Utd'][:history]
+#p table['Wigan'][:history]
+#p table['Derby'][:history]
