@@ -21,3 +21,6 @@ def extra_bonus_points(hs, as, hp, ap)
     return hb, ab
 end
 
+def sort_table(table)
+	proc {|t| 1000*(table[t][:points]+table[t][:bonus]) + (table[t][:for] - table[t][:against]) }
+end
