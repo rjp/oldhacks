@@ -1,5 +1,5 @@
 def pos_to_points(p)
-	return (2+2*(p+3.5)/19.0).to_i
+	return 6-(2+2*(p+3.5)/19.0).to_i
 end
 
 def points_for_home_win(hs, as, hp, ap)
