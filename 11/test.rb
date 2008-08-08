@@ -72,7 +72,7 @@ games.each { |game|
 }
 printf "%2s %-16s %3s %4s %3s %s %3s %3s %4s %2s %2s %2s %2s\n", '#', 'Team', 'Pts', 'Bns', 'Tot', 'pos', 'gf', 'ga', 'gd', 'P', 'W', 'D', 'L'
 table.keys.sort_by{|k|table[k][:pos]}.each_with_index {|t,i|
-    printf "%2d %-16s %3d +%3d %3d %3d %3d %3d %4d %2d %2d %2d %2d %2d %2d\n", i+1, t, table[t][:points], table[t][:bonus], table[t][:points]+table[t][:bonus], table[t][:pos], table[t][:for], table[t][:against], table[t][:for]-table[t][:against], table[t][:played], table[t][:win], table[t][:draw], table[t][:lose], table[t][:homewin], table[t][:played]-table[t][:draw]-table[t][:homewin]
+    printf "%2d %-16s %3d +%3d %3d %3d %3d %3d %4d %2d %2d %2d %2d %2d %2d\n", i+1, t, table[t][:points], table[t][:bonus], table[t][:points]+table[t][:bonus], table[t][:pos], table[t][:for], table[t][:against], table[t][:for]-table[t][:against], table[t][:played], table[t][:win], table[t][:draw], table[t][:lose], table[t][:homewin], table[t][:win]-table[t][:homewin]
 
 }
 
