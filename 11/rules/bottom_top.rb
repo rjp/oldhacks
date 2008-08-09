@@ -8,9 +8,9 @@ end
 
 def points_for_home_loss(hs, as, hp, ap)
 	if hp < 11 then 
-		return 4, 0, 0, 0    
+		return 0, 0, 4, 0
 	else
-		return 2, 0, 0, 0
+		return 0, 0, 2, 0
 	end
 end
 
