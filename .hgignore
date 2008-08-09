@@ -1,1 +1,3 @@
-letters/*
+.*/letters/.*
+.*/11/history/.*
+.*/11/svg/.*
