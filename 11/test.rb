@@ -4,7 +4,7 @@ require ARGV[0]
 
 history_file = ARGV[1] || 'historyfile.yml'
 
-table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>10, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[] } }
+table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>0, :bonus=>0, :pos=>11, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[] } }
 
 sort_routine = sort_table(table)
 
@@ -17,11 +17,11 @@ def home_win(table, home, away, hs, as)
 	table[home][:win] = table[home][:win] + 1
 	table[away][:lose] = table[away][:lose] + 1
 	table[home][:homewin] = table[home][:homewin] + 1
-
     table[home][:result] = 'W'
     table[away][:result] = 'L'
     table[home][:p] = [hp,hb]
     table[away][:p] = [ap,ab]
+    puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
 end
 
 def away_win(table, home, away, hs, as)
@@ -36,6 +36,7 @@ def away_win(table, home, away, hs, as)
     table[away][:result] = 'W'
     table[home][:p] = [hp,hb]
     table[away][:p] = [ap,ab]
+    puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
 end
 
 def draw(table, home, away, hs, as)
@@ -50,6 +51,7 @@ def draw(table, home, away, hs, as)
     table[away][:result] = 'D'
     table[home][:p] = [hp,hb]
     table[away][:p] = [ap,ab]
+    puts "pt=#{hp}+#{hb} - #{ap}+#{ab}"
 end
 
 by_date = YAML.load_file('results.yaml')
@@ -61,7 +63,7 @@ games.each { |game|
     as = as.to_i
     table[home][:played] = table[home][:played]+1
     table[away][:played] = table[away][:played]+1
-    puts "h=#{home} a=#{away} s=#{hs}-#{as}"
+    print "h=#{home}/#{table[home][:pos]} a=#{away}/#{table[away][:pos]} s=#{hs}-#{as} "
     if hs > as then
     	home_win(table, home, away, hs, as)
     elsif as > hs then
