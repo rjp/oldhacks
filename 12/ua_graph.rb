@@ -1,4 +1,5 @@
 require 'svg/svg'
+require 'time'
 
 spans = Hash.new {|h,k| h[k] = []}
 timeon = Hash.new(0)
@@ -16,6 +17,8 @@ $stdin.readlines.each { |line|
 
 puts "range=#{min}-#{max}"
 scale = 800.0/(max-min)
+
+# work out weekends and highlight?
 
 colours = %w{red blue green magenta cyan}
 col_index = 0
