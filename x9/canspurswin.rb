@@ -1,7 +1,6 @@
 table = {}
 
 def show(table)
-    temp = []
     a=%w{Ps Team P W D L GF GA GD P}
     printf "%2s %-20s %2s %2s %2s %2s %2s %2s %4s %2s\n", *a
     new = table.keys.sort_by {|i| 1000*table[i][:points] + table[i][:gf] - table[i][:ga]}.reverse
@@ -10,24 +9,17 @@ def show(table)
         r[:pos] = i+1
         printf "%2s %-20s %2d %2d %2d %2d %2d %2d %4d %2d\n", 
                r[:pos], team, r[:played], r[:won], r[:drawn], r[:lost], r[:gf], r[:ga], r[:gf]-r[:ga], r[:points]
-	temp[i+1] = team
     }
-    if table['Derby'][:pos].to_i != 20 then
-    	puts "DERBY ARE NOT BOTTOM"
-    end
-    if table[temp[19]][:points] > table['Derby'][:points] + 3*(38-table['Derby'][:played]) then
-    	puts "DERBY ARE RELEGATED"
-    end
 end
 
-def loss_for(x, table)
+def win_for(x, table)
 	table[x][:points] = table[x][:points]  + 3
 	table[x][:won] = table[x][:won]  + 1
 	table[x][:played] = table[x][:played]  + 1
 	table[x][:gf] = table[x][:gf]  + 1
 end
 
-def win_for(x, table)
+def loss_for(x, table)
 	table[x][:lost] = table[x][:lost]  + 1
 	table[x][:played] = table[x][:played]  + 1
 	table[x][:ga] = table[x][:ga]  + 1
@@ -60,13 +52,13 @@ File.open("fixtures") { |f|
             away = t_away.gsub(/ /, '_')
             puts "#{home} (#{table[home][:pos]}, #{table[home][:points]}) v #{away} (#{table[away][:pos]}, #{table[away][:points]})   D(#{table['Derby'][:pos]}, #{table['Derby'][:points]})"
             if home == 'Derby' then
-                win_for home, table
-                loss_for away, table
-                puts "Derby win at home"
-            elsif away == 'Derby'
-                loss_for home, table
                 win_for away, table
-                puts "Derby win away"
+                loss_for home, table
+                puts "Derby lose at home"
+            elsif away == 'Derby'
+                loss_for away, table
+                win_for home, table
+                puts "Derby lose away"
             else
                 if table[home][:points] > max_points then # Derby can never overhaul these people
                     if table[away][:points] > max_points then # or these people so let them draw
@@ -74,8 +66,8 @@ File.open("fixtures") { |f|
                         draw_for home, away, table
                     else
                         puts "#{home} (non-reachable) beat #{away} (reachable)"
-                        win_for home, table
-                        loss_for away, table
+                        win_for away, table
+                        loss_for home, table
                     end
                 elsif table[away][:points] > max_points then # or these people so let them draw
                     if table[home][:points] > max_points then # Derby can never overhaul these people
@@ -83,22 +75,22 @@ File.open("fixtures") { |f|
                         draw_for home, away, table
                     else
                         puts "#{away} (non-reachable) beat #{home} (reachable)"
-                        loss_for home, table
-                        win_for away, table
+                        loss_for away, table
+                        win_for home, table
                     end
                 elsif table[home][:pos] > table['Derby'][:pos] then
                     if table[home][:points] + 4 < table['Derby'][:points] then
                         puts "#{home} beat #{away} because < Derby on pos, points"
-                        win_for home, table
-                        loss_for away, table
+                        win_for away, table
+                        loss_for home, table
                     else
                         draw_for home, away, table
                     end
                 elsif table[away][:pos] > table['Derby'][:pos] then
                     if table[away][:points] + 4 < table['Derby'][:points] then
                         puts "#{away} beat #{home} because < Derby on pos, points"
-                        loss_for home, table
-                        win_for away, table
+                        loss_for away, table
+                        win_for home, table
                     else
                         puts "#{home} draw with #{away}"
                         draw_for home, away, table
@@ -109,8 +101,8 @@ File.open("fixtures") { |f|
                         draw_for home, away, table
                     else
                         puts "#{away} beat #{home} because home is close"
-                        win_for away, table
-                        loss_for home, table
+                        win_for home, table
+                        loss_for away, table
                     end
                 elsif table[away][:pos] > table['Derby'][:pos] - 3 then
                     if table[home][:pos] < table['Derby'][:pos] - 3 then
@@ -118,17 +110,17 @@ File.open("fixtures") { |f|
                         draw_for home, away, table
                     else
                         puts "#{home} beat #{away} because away is close"
-                        win_for home, table
-                        loss_for away, table
+                        win_for away, table
+                        loss_for home, table
                     end
                 elsif table[home][:pos] < 6 then
                     puts "#{home} beat #{away} because top-5"
-                    win_for home, table
-                    loss_for away, table
+                    win_for away, table
+                    loss_for home, table
                 elsif table[away][:pos] < 6 then
                     puts "#{away} beat #{home} because top-5"
-                    loss_for home, table
-                    win_for away, table
+                    loss_for away, table
+                    win_for home, table
                 else
                     puts "#{home} draw with #{away}"
                     draw_for home, away, table
