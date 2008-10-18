@@ -1,0 +1,21 @@
+---
+Preparsed:
+- 0607.yaml: premiership results for 06-07
+- 0708.yaml: premiership results for 07-08
+Output:
+- history/: processed history output from driver.sh
+- svg/: SVG output from driver.sh
+Templates:
+- html.erb: results table
+Business Logic:
+- graphs/: varying types of graphs
+- rules/: the different rulesets
+- rules.yaml: cached descriptions of the rulesets
+Code:
+- parseprem.rb: parse a BBC sport results page using hpricot
+- preparse.rb: use parseprem.rb to turn results into YAML
+- test.rb: run a YAML results set through a set of rules
+- showfinal.rb: convert history files into formatted tables
+Misc:
+- driver.sh: process a league through all rules and graphs
+- montage.sh: stitch pointspread graphs together
