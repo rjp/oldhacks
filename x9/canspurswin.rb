@@ -1,4 +1,9 @@
+require 'time'
+
 table = {}
+
+table_file = ARGV[0] || "table" # downloaded before today
+fixtures_file = ARGV[1] || "fixtures"
 
 def show(table)
     a=%w{Ps Team P W D L GF GA GD P}
@@ -34,7 +39,7 @@ def draw_for(x, y, table)
 	table[y][:played] = table[y][:played]  + 1
 end
 
-File.open("table") { |f|
+File.open(table_file) { |f|
     f.readlines.each { |l|
         pos, team, played, won, drawn, lost, goals_for, goals_against, *junk = l.gsub(/\t+/, ' ').split ' '
         points = junk[-1]
@@ -44,13 +49,23 @@ File.open("table") { |f|
 
 max_points = table['Tottenham'][:points] + 3*(38-table['Tottenham'][:played])
 
-File.open("fixtures") { |f|
+fixture_date = Time.now()
+File.open(fixtures_file) { |f|
     f.readlines.each { |l|
+        if l =~ /^\w+, \d+ \w+ \d{4}/ then # datestamp
+            puts "fixtures are now for #{fixture_date}"
+            fixture_date = Time.parse(l)
+        end
+# skip fixtures we've seen
+        if fixture_date+86400 < Time.now() then
+            puts "skipping [#{l}], too old"
+            next
+        end
         if l =~ /(.*?) v (.+),/ then
             t_away = $2
             home = $1.gsub(/ /, '_') # this will blat $2
             away = t_away.gsub(/ /, '_')
-            puts "#{home} (#{table[home][:pos]}, #{table[home][:points]}) v #{away} (#{table[away][:pos]}, #{table[away][:points]})   D(#{table['Tottenham'][:pos]}, #{table['Tottenham'][:points]})"
+            puts "#{home} (#{table[home][:pos]}, #{table[home][:points]}) v #{away} (#{table[away][:pos]}, #{table[away][:points]})   D(#{table['Tottenham'][:pos]}, #{table['Tottenham'][:points]}) <#{fixture_date}>"
             if home == 'Tottenham' then
                 win_for home, table
                 loss_for away, table
