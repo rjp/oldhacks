@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="9cm" height="9cm" viewBox="0 0 <%=width%> <%=height%>"
+  xmlns="http://www.w3.org/2000/svg" version="1.1">
+<title>rules</title>
+<desc>League Points vs Games Played</desc>
+% table.each_with_index {|ruleset, i|
+%  ruleset.each_with_index { |z, x|
+%   next if z.nil?
+%   t, p, s, sh, c = z
+    <rect x="<%= x*40 %>" 
+    y="<%= i*40 %>"
+    width="40" height="40" fill="#<%= c %>" title="<%= sh %>" stroke="<%=c%>"/>
+%  }
+% }
+</svg>

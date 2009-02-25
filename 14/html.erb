@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+xmlns:svg="http://www.w3.org/2000/svg">
+<head><title>Results</title>
+<style>
+th {max-width: 10em}
+.r1 {background-color: #bbffbb}
+% (1-relegated..0).each { |k|
+.r<%=size+k%> {background-color: #ffbbbb}
+% }
+small {font-size: x-small}
+.hilite {background-color: #ffff88}
+</style>
+<script src="/rjp/jquery.js" type="text/javascript"></script>
+</head>
+<body>
+<table border='1'>
+<tr>
+<th></th>
+% rules.each {|ruleset|
+    <th> <a href="/rjp/tmp/fg/<%= ruleset %>.rb.txt"><%= ruleset %></a> <br/><small><%= desc[ruleset] %></small></th>
+% }
+</tr>
+% (1..size).each { |i|
+<tr class='r<%= i %>'><td><%= i %></td>
+%  table.collect {|j| j[i-1]}.each { |t,p,g| s=t.upcase.gsub(/[^A-Z]/,'')
+%  short = t.gsub(/[aeiou]/,'').upcase.gsub(/[^A-Z]/,'').gsub(/(.)\1\1(.)/,'\1\1\2')[0..2]
+    <td class='<%= s %>'> <%= t %> <small>(<%=p%>,<%=g%>) <%=short%></small></td>
+%  }
+</tr>
+% }
+</table>
+<script>
+$('td').click(function() {
+        var set = $(this).hasClass('hilite');
+        $('td').removeClass('hilite');
+        if (set) { return; }
+        $('td.'+$(this).attr('class')).addClass('hilite');
+});
+</script>
+<h2>Stats (excluding knockouts and real position)</h2>
+<table>
+<tr><th>Pos</th><th>Team</th><th>Best pos</th><th>Worst pos</th><th style="color:red">Average</th>
+<th>Diff (avg)</th> <th style="color:blue">Real #</th><th>Diff (real)</th><th>&nbsp;</th> </tr>
+% i=1
+% teams.sort_by {|k,v| v[:totpos].to_f/v[:totcomp]}.each { |k,v|
+% avg=v[:totpos].to_f/v[:totcomp]
+<tr><td><%= i%></td>
+<td><%=k%></td>
+    <td><%=v[:bestpos]%></td>
+    <td><%=v[:worstpos]%></td>
+    <td><%=sprintf("%0.1f",avg)%></td>
+    <td><%=sprintf("%0.1f",(v[:real]-avg))%></td>
+    <td><%=v[:real]%></td>
+    <td><%=v[:real]-i%></td>
+    <td>
+% scale=10
+% width=21*scale+1
+% x1=scale*v[:bestpos]-scale/2; x2=scale*v[:worstpos]+scale/2; w1=x2-x1; x3=(scale*avg).to_i-scale/8; x4=scale*v[:real].to_i-scale/8
+<svg:svg version="1.1" baseProfile="full" width="<%=width%>px" height="10px">
+<svg:rect x="<%=x1%>" y="1" width="<%=w1%>" height="8" stroke="none" fill="#88ff88"/>
+<svg:rect x="<%=x4%>" y="2" width="<%=scale/4%>" height="4" stroke="blue" fill="blue"/>
+<svg:rect x="<%=x3%>" y="6" width="<%=scale/4%>" height="4" stroke="red" fill="red"/>
+<svg:rect x="<%=scale/2-1%>" y="1" width="<%=width+1%>" height="9" stroke="black" fill="none"/>
+    </svg:svg>
+    </td></tr>
+% i=i+1
+% }
+</table>
+</body></html>
