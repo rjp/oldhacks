@@ -49,15 +49,24 @@ File.open(table_file) { |f|
 
 max_points = table['Tottenham'][:points] + 3*(38-table['Tottenham'][:played])
 
-fixture_date = Time.now()
+plot_date = nil
+if ARGV[2].nil? then
+    plot_date = Time.now()
+else
+    plot_date = Time.parse(ARGV[2])
+end
+
+fixture_date = nil
+
 File.open(fixtures_file) { |f|
     f.readlines.each { |l|
         if l =~ /^\w+, \d+ \w+ \d{4}/ then # datestamp
-            puts "fixtures are now for #{fixture_date}"
             fixture_date = Time.parse(l)
+            puts "fixtures are now for #{fixture_date}"
         end
 # skip fixtures we've seen
-        if fixture_date+86400 < Time.now() then
+        puts "fixture: #{fixture_date} cf: #{plot_date}"
+        if fixture_date < plot_date then
             puts "skipping [#{l}], too old"
             next
         end
