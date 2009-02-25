@@ -23,6 +23,7 @@ end
 history_file = ARGV[1] || 'historyfile.yml'
 teams = YAML.load_file(ARGV[2])
 
+place = Hash.new { |h,k| h[k] = [] }
 table = Hash.new { |h,k| h[k] = {:win=>0, :draw=>0, :lose=>0, :played=>0, :points=>$initial_points, :bonus=>0, :pos=>$initial_pos, :for=>0, :against=>0, :history=>[], :homewin=>0, :results=>[], :ppg=>[], :name => k } }
 
 teams.each { |team| table[team][:win] = 0 }
@@ -69,6 +70,9 @@ games.each { |game|
     table[home][:played] = table[home][:played]+1
     table[away][:played] = table[away][:played]+1
     $stderr.print "h=#{home}/#{table[home][:pos]}:#{table[home][:points]} a=#{away}/#{table[away][:pos]}:#{table[away][:points]} s=#{hs}-#{as} (#{hhs}-#{ahs}) "
+    
+    place[home][table[home][:played]] = 'H'
+    place[away][table[away][:played]] = 'A'
 
     hp, hb, ap, ab, hg, ag = points(game, table[home], table[away])
 
@@ -97,7 +101,7 @@ games.each { |game|
     table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
         table[t][:pos] = i+1
         simple.push "#{t} (#{table[t][:points]+table[t][:bonus]})"
-        table[t][:history][table[t][:played]] = [i+1, table[t][:points], table[t][:bonus], table[t][:result], *table[t][:p]]
+        table[t][:history][table[t][:played]] = [i+1, table[t][:points], table[t][:bonus], table[t][:result], table[t][:p], place[t][table[t][:played]]]
         if t == 'Man_Utd' then; $stderr.puts "#{date}: Man Utd #{plot_pos} = #{i+1}"; end
         leaguepos[t][plot_pos]=i+1
 
