@@ -12,8 +12,10 @@ puts <<HEADER
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="24cm" height="5cm" viewBox="0 0 #{width} #{height}"
-  xmlns="http://www.w3.org/2000/svg" version="1.1">
+  onload="init();" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns="http://www.w3.org/2000/svg" version="1.1" id="plotpos">
 <title>#{title}</title>
+<script type="text/javascript" xlink:href="football.js"/>
 <desc>League Points vs Games Played</desc>
 <rect x="1" y="1" width="#{width-2}" height="#{height-2}" fill="none" stroke="blue" />
 HEADER
@@ -23,10 +25,12 @@ infohash.keys.each { |team|
     data = infohash[team]
     first = data[0]
     colour = Digest::MD5.hexdigest(team)[-6..-1]
+    c = %Q{class="#{team}"}
     y = first * 10 +3
-    puts %Q{<text x="#{offset}" y="#{y}" font-size="8" fill="##{colour}" text-anchor="end">#{team}</text>}
-    puts %Q{<text x="#{width-100}" y="#{data[-1]*10+3}" font-size="8" fill="##{colour}">#{team}</text>}
-    puts %Q{<path d="M #{start*10+offset} #{y-3} L }
+    puts %Q{<g id="#{team}" onmousedown="hilite('#{team}')">}
+    puts %Q{<text #{c} x="#{offset}" y="#{y}" font-size="8" fill="##{colour}" text-anchor="end">#{team}</text>}
+    puts %Q{<text #{c} x="#{width-100}" y="#{data[-1]*10+3}" font-size="8" fill="##{colour}">#{team}</text>}
+    puts %Q{<path #{c} d="M #{start*10+offset} #{y-3} L }
     i = 2
     x = data.shift
     puts data[1..-1].map {|p|
@@ -43,12 +47,14 @@ infohash.keys.each { |team|
         y = data[i] * 10
         x = j * 10 + offset
         if i == data.size-1 then
-            puts %Q{<circle cx="#{x}" cy="#{y}" r="2" fill="##{colour}" stroke="##{colour}" title="#{team}"/>}
+            puts %Q{<circle #{c} cx="#{x}" cy="#{y}" r="2" fill="##{colour}" stroke="##{colour}" title="#{team}"/>}
         else 
-            puts %Q{<path d="M #{x} #{y-1} L #{x} #{y+1}" fill="none" stroke="##{colour}"/>}
+            puts %Q{<path #{c} d="M #{x} #{y-1} L #{x} #{y+1}" fill="none" stroke="##{colour}"/>}
         end
         counter = counter + 1
     }
+
+    puts %Q{</g>}
 }
 
 puts <<FOOTER
