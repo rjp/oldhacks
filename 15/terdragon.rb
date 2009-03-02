@@ -24,7 +24,9 @@ stroke rgb(0,0,0)
 	        a = a + d * Math.cos(r)
 	        b = b + d * Math.sin(r)
             append do
-    	        line oa, ob, a, b
+                if oa != a and ob != b then
+                    line oa, ob, a, b
+                end
             end
 #printf "line (%d,%d) (%d,%d)\n", oa, ob, a, b
 	        oa = a
