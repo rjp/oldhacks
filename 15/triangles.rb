@@ -1,4 +1,4 @@
-def round(v, r)
+def round(v, r=0.5)
     scale = 1000000.0
     sv = v * scale
     sr = r * scale
@@ -34,8 +34,8 @@ lines = Hash.new { |h,k| h[k] = [] }
 	        r = r + 2.094 * (e-1)
 	        a = a + d * Math.cos(r)
 	        b = b + d * Math.sin(r)
-            na = round(a, 0.2)
-            nb = round(b, 0.2)
+            na = round(a)
+            nb = round(b)
             if a != oa and b != ob then
                 printf "R line (%g,%g) (%g,%g)\n", oa, ob, a, b
                 printf "N line (%g,%g) (%g,%g)\n\n", noa, nob, na, nb
