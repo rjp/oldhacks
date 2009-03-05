@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'rmagick'
+
 def round(v, r=0.5)
     scale = 1000000.0
     sv = v * scale
@@ -15,21 +18,16 @@ end
 done = {}
 limit = ARGV[0].to_i || 400
 
-$stderr.puts <<SVGHEAD
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
-  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="8cm" height="8cm" viewBox="0 0 400 400"
-  onload="init();" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns="http://www.w3.org/2000/svg" version="1.1" id="plotpos">
-<title>Triangles</title>
-<desc>Triangles</desc>
-SVGHEAD
+frame = 0
+left = 50
+right = 500-left
+gc = Magick::Draw.new
+gc.fill('#ffffff')
 
 lines = Hash.new { |h,k| h[k] = [] }
     
 	c="12101"
-	a=50.0
+	a=left
 	b=50.0
 	r=5.5
 	i=0
@@ -54,23 +52,23 @@ lines = Hash.new { |h,k| h[k] = [] }
             na = round(a)
             nb = round(b)
             if a != oa and b != ob then
-                printf "R line (%g,%g) (%g,%g)\n", oa, ob, a, b
-                printf "N line (%g,%g) (%g,%g)\n\n", noa, nob, na, nb
+                frame = frame + 1
+                gc.stroke('#000000')
+                gc.line(right+oa, ob, right+a, b)
                 first = "#{na} #{nb}"
                 lines[first].push "#{noa} #{nob}"
                 lines[first].each { |second|
                     lines[second].each { |third|
                         lines[third].each { |fourth|
-                            puts "C #{first} #{second} #{third} #{fourth}"
                             if fourth == first then
                                 x = [first, second, third].sort.join(' ')
                                 if done[x].nil? then
-                                    puts "T #{first} #{second} #{third}"
                                     m = triangles % 32
                                     n = m % 16
                                     p = m > 15 ? 15-n : n
                                     fill = sprintf("#%02x%02x%02x", 17*p, 255-17*p, (128+17*p)%255)
-                                    $stderr.puts %Q{<path d="M #{first} L #{second} #{third} #{fourth}" stroke="black" fill="#{fill}"/><!-- #{x} -->}
+                                    points = "#{first} #{second} #{third} #{fourth}".split(' ')
+                                    gc.polygon(*points)
                                     triangles = triangles + 1
                                 end
                                 done[x] = 1
@@ -78,6 +76,11 @@ lines = Hash.new { |h,k| h[k] = [] }
                         }
                     }
                 }
+                $stderr.puts "#{frame},#{triangles}"
+                canvas = Magick::Image.new(700, 200, Magick::HatchFill.new('white','white'))
+                gc.draw(canvas)
+                filename = sprintf("png/frame%04d.png", frame)
+                canvas.write(filename)
             end
 	        oa = a
 	        ob = b
@@ -86,4 +89,3 @@ lines = Hash.new { |h,k| h[k] = [] }
 	    end
         i = i + 1
 	end
-    $stderr.puts "</svg>"
