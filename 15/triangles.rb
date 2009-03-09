@@ -15,14 +15,16 @@ def round(v, r=0.5)
     return sv/scale
 end
 
+clean_canvas = Magick::Image.new(600, 400) { self.background_color = 'white' }
+
 done = {}
 limit = ARGV[0].to_i || 400
 
 frame = 0
 left = 50
-right = 500-left
+right = 300-left
 gc = Magick::Draw.new
-gc.fill('#ffffff')
+gc.fill('#ff8888')
 
 lines = Hash.new { |h,k| h[k] = [] }
     
@@ -44,7 +46,7 @@ lines = Hash.new { |h,k| h[k] = [] }
 	    e = c[i % c.size] - 48
 	    d = (e==1) ? 8 : 0
 	    if i < 7 then
-	        c = c.split("1").join("12101")
+  	        c = c.split("1").join("12101")
 	    else
 	        r = r + 2.094 * (e-1)
 	        a = a + d * Math.cos(r)
@@ -55,21 +57,32 @@ lines = Hash.new { |h,k| h[k] = [] }
                 frame = frame + 1
                 gc.stroke('#000000')
                 gc.line(right+oa, ob, right+a, b)
+#               gc.line(oa, ob, a, b)
+                puts "l=#{frame} (#{oa}, #{ob}) (#{a}, #{b})"
                 first = "#{na} #{nb}"
-                lines[first].push "#{noa} #{nob}"
-                lines[first].each { |second|
-                    lines[second].each { |third|
-                        lines[third].each { |fourth|
+                lines[first].push ["#{noa} #{nob}", frame, noa, nob]
+                lines[first].each { |second, si, sx, sy|
+                    lines[second].each { |third, thi, thx, thy|
+                        lines[third].each { |fourth, fi, fx, fy|
                             if fourth == first then
                                 x = [first, second, third].sort.join(' ')
                                 if done[x].nil? then
-                                    m = triangles % 32
-                                    n = m % 16
-                                    p = m > 15 ? 15-n : n
-                                    fill = sprintf("#%02x%02x%02x", 17*p, 255-17*p, (128+17*p)%255)
-                                    points = "#{first} #{second} #{third} #{fourth}".split(' ')
-                                    gc.polygon(*points)
+                                    order = [[first, fi, fx, fy], [second, si, sx, sy], [third, thi, thx, thy]].sort_by {|xx,yy,aa,bb| yy}
+# calculate the cross product for clockwise/anti
+									cc = 0
+									0.upto(order.size-1) { |ii|
+									    j = (ii+1) % order.size
+									    k = (ii+2) % order.size
+									    z = (order[j][2] - order[ii][2]) * (order[k][3] - order[j][3])
+									    z = z - (order[j][3] - order[ii][3]) * (order[k][3] - order[j][3])
+									    if z < 0 then cc = cc - 1; else cc = cc + 1; end
+									}
                                     triangles = triangles + 1
+		                            puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc}"
+		                            if cc > 0 then gc.fill('#ff4444'); else gc.fill('#44ff44'); end
+                                    points = [fx, fy, sx, sy, thx, thy, fx, fy]
+                                    gc.stroke('#888888')
+                                    gc.polygon(*points)
                                 end
                                 done[x] = 1
                             end
@@ -77,10 +90,20 @@ lines = Hash.new { |h,k| h[k] = [] }
                     }
                 }
                 $stderr.puts "#{frame},#{triangles}"
-                canvas = Magick::Image.new(700, 200, Magick::HatchFill.new('white','white'))
+                if 1 or (frame > 193 and frame < 196) or (frame > 219 and frame < 222) then
+                canvas = clean_canvas.dup
+                x = Magick::Draw.new
+                x.text(10, 20, "Lines: #{frame} Triangles: #{triangles}") {
+                    self.font = "/cygdrive/c/WINDOWS/Fonts/arial.ttf"
+                    self.font_size = 10
+                    self.font_weight = 100
+                }
                 gc.draw(canvas)
+                x.draw(canvas)
                 filename = sprintf("png/frame%04d.png", frame)
-                canvas.write(filename)
+                canvas.write(filename) { self.depth = 8 }
+                canvas.destroy!
+                end
             end
 	        oa = a
 	        ob = b
