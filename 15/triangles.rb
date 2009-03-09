@@ -1,3 +1,8 @@
+require 'rubygems'
+require 'rmagick'
+
+counter = Hash.new(0)
+
 def round(v, r=0.5)
     scale = 1000000.0
     sv = v * scale
@@ -12,25 +17,23 @@ def round(v, r=0.5)
     return sv/scale
 end
 
+width=1000
+clean_canvas = Magick::Image.new(width, width) { self.background_color = 'white' }
+
 done = {}
 limit = ARGV[0].to_i || 400
 
-$stderr.puts <<SVGHEAD
-<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
-  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="8cm" height="8cm" viewBox="0 0 400 400"
-  onload="init();" xmlns:xlink="http://www.w3.org/1999/xlink"
-  xmlns="http://www.w3.org/2000/svg" version="1.1" id="plotpos">
-<title>Triangles</title>
-<desc>Triangles</desc>
-SVGHEAD
+frame = 0
+left = 150
+right = (width/2)
+gc = Magick::Draw.new
+gc.fill('#ff8888')
 
 lines = Hash.new { |h,k| h[k] = [] }
     
 	c="12101"
-	a=50.0
-	b=50.0
+	a=left
+	b=100.0
 	r=5.5
 	i=0
 	oa=a
@@ -46,38 +49,72 @@ lines = Hash.new { |h,k| h[k] = [] }
 	    e = c[i % c.size] - 48
 	    d = (e==1) ? 8 : 0
 	    if i < 7 then
-	        c = c.split("1").join("12101")
+  	        c = c.split("1").join("12101")
 	    else
-	        r = r + 2.094 * (e-1)
+	        r = r + 2.0943951023932 * (e-1)
 	        a = a + d * Math.cos(r)
 	        b = b + d * Math.sin(r)
             na = round(a)
             nb = round(b)
             if a != oa and b != ob then
-                printf "R line (%g,%g) (%g,%g)\n", oa, ob, a, b
-                printf "N line (%g,%g) (%g,%g)\n\n", noa, nob, na, nb
+                frame = frame + 1
+                gc.stroke('#000000')
+                gc.line(right+oa, ob, right+a, b)
+#               gc.line(oa, ob, a, b)
+                puts "l=#{frame} (#{oa}, #{ob}) (#{a}, #{b}) [(#{noa}, #{nob}) (#{na}, #{nb})]"
                 first = "#{na} #{nb}"
-                lines[first].push "#{noa} #{nob}"
-                lines[first].each { |second|
-                    lines[second].each { |third|
-                        lines[third].each { |fourth|
-                            puts "C #{first} #{second} #{third} #{fourth}"
+                lines[first].push ["#{noa} #{nob}", frame, noa, nob]
+                lines[first].each { |second, si, sx, sy|
+                    lines[second].each { |third, thi, thx, thy|
+                        lines[third].each { |fourth, fi, fx, fy|
                             if fourth == first then
                                 x = [first, second, third].sort.join(' ')
                                 if done[x].nil? then
-                                    puts "T #{first} #{second} #{third}"
-                                    m = triangles % 32
-                                    n = m % 16
-                                    p = m > 15 ? 15-n : n
-                                    fill = sprintf("#%02x%02x%02x", 17*p, 255-17*p, (128+17*p)%255)
-                                    $stderr.puts %Q{<path d="M #{first} L #{second} #{third} #{fourth}" stroke="black" fill="#{fill}"/><!-- #{x} -->}
+                                    order = [[first, fi, fx, fy], [second, si, sx, sy], [third, thi, thx, thy]].sort_by {|xx,yy,aa,bb| yy}
+# calculate the cross product for clockwise/anti
+									cc = 0
+									0.upto(order.size-1) { |ii|
+									    j = (ii+1) % order.size
+									    k = (ii+2) % order.size
+line = "#{order[ii][2]} #{order[ii][3]} #{order[j][2]} #{order[j][3]}"
+counter[line] = counter[line] + 1
+									    z = (order[j][2] - order[ii][2]) * (order[k][3] - order[j][3])
+									    z = z - (order[j][3] - order[ii][3]) * (order[k][3] - order[j][3])
+									    if z < 0 then cc = cc - 1; else cc = cc + 1; end
+									}
                                     triangles = triangles + 1
+		                            if cc > 0 then gc.fill('#ff4444'); else gc.fill('#44ff44'); end
+                                    points = [fx, fy, sx, sy, thx, thy, fx, fy]
+                                    gc.stroke('#888888')
+                                    gc.polygon(*points)
+perimeter = 0
+counter.each { |h,k|
+    if k == 1 then
+        perimeter = perimeter + 1
+    end
+}
+puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc} p=#{perimeter}"
                                 end
                                 done[x] = 1
                             end
                         }
                     }
                 }
+                $stderr.puts "#{frame},#{triangles}"
+                if triangles == limit then # or (frame > 193 and frame < 196) or (frame > 219 and frame < 222) then
+                canvas = clean_canvas.dup
+                x = Magick::Draw.new
+                x.text(10, 20, "Lines: #{frame} Triangles: #{triangles}") {
+                    self.font = "/cygdrive/c/WINDOWS/Fonts/arial.ttf"
+                    self.font_size = 10
+                    self.font_weight = 100
+                }
+                gc.draw(canvas)
+                x.draw(canvas)
+                filename = sprintf("png/frame%04d.png", frame)
+                canvas.write(filename) { self.depth = 8 }
+                canvas.destroy!
+                end
             end
 	        oa = a
 	        ob = b
@@ -86,4 +123,3 @@ lines = Hash.new { |h,k| h[k] = [] }
 	    end
         i = i + 1
 	end
-    $stderr.puts "</svg>"
