@@ -23,7 +23,7 @@ limit = ARGV[0].to_i || 400
 
 frame = 0
 left = 150
-right = (width/2)+75
+right = (width/2)
 gc = Magick::Draw.new
 gc.fill('#ff8888')
 
