@@ -6,7 +6,7 @@ OPFX=data/${LGE}/${YEAR}
 
 mkdir -p data/${LGE} -p history/${LGE}/${YEAR} $OHTML
 
-# wget -O $OPFX.html http://news.bbc.co.uk/sport1/hi/football/eng_prem/results/default.stm
+wget -O $OPFX.html http://news.bbc.co.uk/sport1/hi/football/eng_prem/results/default.stm
 
 if [ ! -e ${OPFX}_teams.yaml ]; then
     echo "You have no teams file, trying to generate one from the results"
