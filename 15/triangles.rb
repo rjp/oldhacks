@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'rmagick'
 
+counter = Hash.new(0)
+
 def round(v, r=0.5)
     scale = 1000000.0
     sv = v * scale
@@ -74,16 +76,24 @@ lines = Hash.new { |h,k| h[k] = [] }
 									0.upto(order.size-1) { |ii|
 									    j = (ii+1) % order.size
 									    k = (ii+2) % order.size
+line = "#{order[ii][2]} #{order[ii][3]} #{order[j][2]} #{order[j][3]}"
+counter[line] = counter[line] + 1
 									    z = (order[j][2] - order[ii][2]) * (order[k][3] - order[j][3])
 									    z = z - (order[j][3] - order[ii][3]) * (order[k][3] - order[j][3])
 									    if z < 0 then cc = cc - 1; else cc = cc + 1; end
 									}
                                     triangles = triangles + 1
-		                            puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc}"
 		                            if cc > 0 then gc.fill('#ff4444'); else gc.fill('#44ff44'); end
                                     points = [fx, fy, sx, sy, thx, thy, fx, fy]
                                     gc.stroke('#888888')
                                     gc.polygon(*points)
+perimeter = 0
+counter.each { |h,k|
+    if k == 1 then
+        perimeter = perimeter + 1
+    end
+}
+puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc} p=#{perimeter}"
                                 end
                                 done[x] = 1
                             end
