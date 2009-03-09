@@ -15,14 +15,15 @@ def round(v, r=0.5)
     return sv/scale
 end
 
-clean_canvas = Magick::Image.new(600, 400) { self.background_color = 'white' }
+width=1000
+clean_canvas = Magick::Image.new(width, width) { self.background_color = 'white' }
 
 done = {}
 limit = ARGV[0].to_i || 400
 
 frame = 0
-left = 50
-right = 300-left
+left = 150
+right = (width/2)+75
 gc = Magick::Draw.new
 gc.fill('#ff8888')
 
@@ -30,7 +31,7 @@ lines = Hash.new { |h,k| h[k] = [] }
     
 	c="12101"
 	a=left
-	b=50.0
+	b=100.0
 	r=5.5
 	i=0
 	oa=a
@@ -48,7 +49,7 @@ lines = Hash.new { |h,k| h[k] = [] }
 	    if i < 7 then
   	        c = c.split("1").join("12101")
 	    else
-	        r = r + 2.094 * (e-1)
+	        r = r + 2.0943951023932 * (e-1)
 	        a = a + d * Math.cos(r)
 	        b = b + d * Math.sin(r)
             na = round(a)
@@ -58,7 +59,7 @@ lines = Hash.new { |h,k| h[k] = [] }
                 gc.stroke('#000000')
                 gc.line(right+oa, ob, right+a, b)
 #               gc.line(oa, ob, a, b)
-                puts "l=#{frame} (#{oa}, #{ob}) (#{a}, #{b})"
+                puts "l=#{frame} (#{oa}, #{ob}) (#{a}, #{b}) [(#{noa}, #{nob}) (#{na}, #{nb})]"
                 first = "#{na} #{nb}"
                 lines[first].push ["#{noa} #{nob}", frame, noa, nob]
                 lines[first].each { |second, si, sx, sy|
@@ -90,7 +91,7 @@ lines = Hash.new { |h,k| h[k] = [] }
                     }
                 }
                 $stderr.puts "#{frame},#{triangles}"
-                if 1 or (frame > 193 and frame < 196) or (frame > 219 and frame < 222) then
+                if triangles == limit then # or (frame > 193 and frame < 196) or (frame > 219 and frame < 222) then
                 canvas = clean_canvas.dup
                 x = Magick::Draw.new
                 x.text(10, 20, "Lines: #{frame} Triangles: #{triangles}") {
