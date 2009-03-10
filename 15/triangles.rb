@@ -1,6 +1,10 @@
 require 'rubygems'
 require 'rmagick'
 
+lookups = 0
+optim_lookups = 0
+optim_lines = Hash.new { |h,k| h[k] = {} }
+
 counter = Hash.new(0)
 
 def round(v, r=0.5)
@@ -17,7 +21,7 @@ def round(v, r=0.5)
     return sv/scale
 end
 
-width=1000
+width=100
 clean_canvas = Magick::Image.new(width, width) { self.background_color = 'white' }
 
 done = {}
@@ -61,12 +65,37 @@ lines = Hash.new { |h,k| h[k] = [] }
                 gc.stroke('#000000')
                 gc.line(right+oa, ob, right+a, b)
 #               gc.line(oa, ob, a, b)
-                puts "l=#{frame} (#{oa}, #{ob}) (#{a}, #{b}) [(#{noa}, #{nob}) (#{na}, #{nb})]"
+#puts "l=#{frame} (#{oa}, #{ob}) (#{a}, #{b}) [(#{noa}, #{nob}) (#{na}, #{nb})]"
+# we have a line from noa,nob to oa,ob
+# if there's a line ending at noa,nob which starts at X,Y and a line starting at oa,ob ending at X,Y, triangle!
+                l_start = "#{noa} #{nob}"
+                l_end = "#{na} #{nb}"
+
+                optim_lines[l_start][l_end] = 1
+                optim_lines[l_end][l_start] = 1
+
+                oo = optim_lines[l_start].keys
+                op = optim_lines[l_end].keys
+                tr = oo & op
+                if tr != [] then
+                    puts "z #{l_start} #{tr} #{l_end}"
+                end
+
+                # look for lines touching this point
+                optim_lines[l_start].each { |k,v|
+                    puts "x #{l_start}: #{k}"
+                    optim_lookups = optim_lookups + 1
+                    if optim_lines[k][l_end] == 1 then
+                        puts "y #{l_start} #{k} #{l_end}"
+                    end
+                }
+
                 first = "#{na} #{nb}"
                 lines[first].push ["#{noa} #{nob}", frame, noa, nob]
                 lines[first].each { |second, si, sx, sy|
                     lines[second].each { |third, thi, thx, thy|
                         lines[third].each { |fourth, fi, fx, fy|
+                            lookups = lookups + 1
                             if fourth == first then
                                 x = [first, second, third].sort.join(' ')
                                 if done[x].nil? then
@@ -93,7 +122,7 @@ counter.each { |h,k|
         perimeter = perimeter + 1
     end
 }
-puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc} p=#{perimeter}"
+puts "DATA,#{frame},#{triangles},#{cc},#{perimeter},#{lookups},#{optim_lookups}"
                                 end
                                 done[x] = 1
                             end
@@ -101,7 +130,7 @@ puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc} p=#{perimeter}"
                     }
                 }
                 $stderr.puts "#{frame},#{triangles}"
-                if triangles == limit then # or (frame > 193 and frame < 196) or (frame > 219 and frame < 222) then
+                if 0 and triangles == limit then # or (frame > 193 and frame < 196) or (frame > 219 and frame < 222) then
                 canvas = clean_canvas.dup
                 x = Magick::Draw.new
                 x.text(10, 20, "Lines: #{frame} Triangles: #{triangles}") {
@@ -123,3 +152,5 @@ puts "f=#{frame} t=#{triangles} o=#{order.inspect} cc=#{cc} p=#{perimeter}"
 	    end
         i = i + 1
 	end
+
+puts "L=#{lookups} OL=#{optim_lookups}"
