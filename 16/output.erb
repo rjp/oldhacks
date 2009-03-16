@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="4in" height="4in" viewBox="0 0 <%=size%> <%=size%>"
+  xmlns="http://www.w3.org/2000/svg" version="1.1">
+<title>Sonogram for <%=title%></title>
+<desc>Sonogram</desc>
+% buckets.each_with_index {|bucket, i| if bucket.count > 0 then
+<path d="M <%= i+offset %> <%= midpoint + bucket.min/scale %> L <%= i+offset %> <%= midpoint + bucket.max/scale %>" stroke="black" fill="none"/>
+<!-- <%= bucket.min %>, <%= bucket.max %> -->
+% end
+% }
+<text x="<%= t_x %>" y="<%= t_y1 %>" font-size="14" fill="#888888"><%= tracknum %></text>
+<text x="<%= t_x %>" y="<%= t_y2 %>" font-size="14" fill="#888888"><%= trackname %></text>
+</svg>
