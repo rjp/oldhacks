@@ -40,7 +40,7 @@ class Bucket
         t = 0
         a.each_with_index { |v,i|
             t = t + v
-            if t > 0.80 * c then
+            if t > 0.90 * c then
                 b = i
                 break
             end
