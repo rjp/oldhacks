@@ -101,7 +101,7 @@ games.each { |game|
     table.keys.sort_by {|x| sort_routine.call(x)}.reverse.each_with_index { |t,i| 
         table[t][:pos] = i+1
         simple.push "#{t} (#{table[t][:points]+table[t][:bonus]})"
-        table[t][:history][table[t][:played]] = [i+1, table[t][:points], table[t][:bonus], table[t][:result], table[t][:p], place[t][table[t][:played]]]
+        table[t][:history][table[t][:played]] = [i+1, table[t][:points], table[t][:bonus], table[t][:result], table[t][:p], place[t][table[t][:played]], table[t][:for], table[t][:against]]
         if t == 'Man_Utd' then; $stderr.puts "#{date}: Man Utd #{plot_pos} = #{i+1}"; end
         leaguepos[t][plot_pos]=i+1
 
