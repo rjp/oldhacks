@@ -7,12 +7,18 @@ def parse_all(doc)
 	matches = Hash.new {|h,k| h[k] = []}
     match_date = nil
     previous_date = nil
-    doc.search('//table[@class="competitionResults"]/tr/comment()/..').each { |match| 
-        title = match.inner_text.strip.gsub(%r{[\n\t\r ]+}, ' ')
-        d = match.parent.previous_sibling.previous_sibling
-        if d.nil? then 
+    doc.search('//table[@class="competitionResults"]/tr/td[@class="c1"]').each { |match| 
+        title = match.parent.to_plain_text
+
+        x = title.gsub(%r{\[.+?\](\n|$)}, "").gsub(%r{\n\S+.+\(.+?(\n |$)},"").gsub(%r{\s+}, " ").strip
+
+        title =  x
+
+        d = match.parent.parent.previous_sibling.previous_sibling.search('/b')
+
+        if d.nil? or d[0].nil? then 
             match_date = previous_date
-        elsif d.name == 'b' then
+        elsif d[0].name == 'b' then
             match_date = d.inner_text
             previous_date = match_date
         end
@@ -24,7 +30,7 @@ def parse_all(doc)
 
         if not data[1].nil? and data[1].inner_text !~ /Bookings/ then
             hgl = data[1].at('/td[@class="c1"]')
-            if hgl then
+            if hgl and not hgl.children.nil? then
                 hgl.children.select{|e| e.text?}.each { |s|
                     s.inner_text =~ / (\d+)$/
                     ko = $1
@@ -33,8 +39,11 @@ def parse_all(doc)
                     }
                 }
             end
-            hgl = data[1].at('/td[@class="c3"]')
-            if hgl then
+            hgl = nil
+            unless data[1].nil? then
+                hgl = data[1].at('/td[@class="c3"]')
+            end
+            if not hgl.nil? and not hgl.children.nil? then
                 hgl.children.select{|e| e.text?}.each { |s|
                     s.inner_text =~ / (\d+)$/
                     ko = $1
@@ -47,10 +56,11 @@ def parse_all(doc)
             bk = data[1]
         end
 
+
         if bk.nil? then
         else 
             hgl = bk.at('/td[@class="c1"]')
-            if hgl then
+            if hgl and not hgl.children.nil? then
 	        # these should go into an array within the match record
                 hgl.children.select{|e| e.text?}.each { |s|
                     s.inner_text =~ / (\d+)$/
@@ -64,8 +74,11 @@ def parse_all(doc)
                     end
                 }
             end
-            hgl = data[1].at('/td[@class="c3"]')
-            if hgl then
+            hgl = nil
+            unless data[1].nil? then
+                hgl = data[1].at('/td[@class="c3"]')
+            end
+            if not hgl.nil? and not hgl.children.nil? then
                 hgl.children.select{|e| e.text?}.each { |s|
                     s.inner_text =~ / (\d+)$/
                     ko = $1.to_i

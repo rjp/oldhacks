@@ -15,7 +15,7 @@ puts <<HEADER
   onload="init();" xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns="http://www.w3.org/2000/svg" version="1.1" id="plotpos">
 <title>#{title}</title>
-<script type="text/javascript" xlink:href="football.js"/>
+<script type="text/javascript" xlink:href="../../football.js"/>
 <desc>League Points vs Games Played</desc>
 <rect x="1" y="1" width="#{width-2}" height="#{height-2}" fill="none" stroke="blue" />
 HEADER

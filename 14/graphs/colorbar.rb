@@ -7,7 +7,7 @@ teams = history.keys.sort
 wscale = 10
 height = teams.size
 
-svg = SVG.new('4in', '8in')
+svg = SVG.new('6in', '8in')
 teams.each_with_index { |team, i|
     short = team.gsub(/^(\S)(\S+)(\s|_)/, '\1').gsub(/[aeiou]/,'').upcase.gsub(/[^A-Z]/,'').gsub(/(.)\1\1(.)/,'\1\1\2')[0..2]
     y = 25*i+20

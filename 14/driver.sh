@@ -14,7 +14,7 @@ for i in rules/*.rb; do
         sed -e '1,/^__DATA__/d' weekly/$prefix/$j | ruby plotpos.rb > svg/$prefix/${j}_pos.svg
 	done
     if [ "$j" = "football" ]; then
-	    for k in graphs/color*.rb; do
+	    for k in graphs/color*.rb ; do
 			l=${k%.*}
 			l=$(basename $l)
 			ruby $k history/$prefix/$j > svg/$prefix/${j}_$l.svg

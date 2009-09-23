@@ -5,14 +5,15 @@ history = YAML.load_file(ARGV[0])
 
 teams = history.keys.sort
 wscale = 3
-right = wscale*42 + 3*wscale
+legend = teams.size * 2
+right = wscale*legend + 3*wscale
 
 svg = SVG.new('8in', '8in')
 teams.each_with_index { |team, i|
     y = 15*i + 15
     junk = history[team].shift
 #    svg << SVG::Line.new(wscale-1, y, 38*wscale+1, y) { self.style = SVG::Style.new(:stroke=>'#888888', :stroke_width=> 1) }
-    svg << SVG::Line.new(right+wscale-1, y, right+38*wscale+1, y) { self.style = SVG::Style.new(:stroke=>'#888888', :stroke_width=> 1) }
+    svg << SVG::Line.new(right+wscale-1, y, right+(legend-2)*wscale+1, y) { self.style = SVG::Style.new(:stroke=>'#888888', :stroke_width=> 1) }
     history[team].each_with_index { |hist, j|
         offset = case hist[5] 
 		when 'H': 0
@@ -34,7 +35,7 @@ teams.each_with_index { |team, i|
                 svg << SVG::Circle.new(x, y, 1.5) { self.style = SVG::Style.new(:fill => '#444488', :stroke => 'none') }
         end
     }
-    svg << SVG::Text.new(right+42*wscale, y+5, team)
+    svg << SVG::Text.new(right+legend*wscale, y+5, team)
 
 }
 

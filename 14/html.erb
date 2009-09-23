@@ -43,7 +43,7 @@ $('td').click(function() {
 <table>
 <tr><th>Pos</th><th>Team</th><th>Best pos</th><th>Worst pos</th><th style="color:red">Average</th>
 <th>Diff (avg)</th> <th style="color:blue">Real #</th><th>Diff (real)</th><th>&nbsp;</th> </tr>
-% i=1
+% i=1; legend=teams.size+1
 % teams.sort_by {|k,v| v[:totpos].to_f/v[:totcomp]}.each { |k,v|
 % avg=v[:totpos].to_f/v[:totcomp]
 <tr><td><%= i%></td>
@@ -56,7 +56,7 @@ $('td').click(function() {
     <td><%=v[:real]-i%></td>
     <td>
 % scale=10
-% width=21*scale+1
+% width=legend*scale+1
 % x1=scale*v[:bestpos]-scale/2; x2=scale*v[:worstpos]+scale/2; w1=x2-x1; x3=(scale*avg).to_i-scale/8; x4=scale*v[:real].to_i-scale/8
 <svg:svg version="1.1" baseProfile="full" width="<%=width%>px" height="10px">
 <svg:rect x="<%=x1%>" y="1" width="<%=w1%>" height="8" stroke="none" fill="#88ff88"/>

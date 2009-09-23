@@ -8,6 +8,7 @@ wscale = 3
 height = teams.size
 goals_for = []
 goals_against = []
+played = []
 
 svg = SVG.new('4in', '8in')
 teams.each_with_index { |team, i|
@@ -17,16 +18,20 @@ teams.each_with_index { |team, i|
     g_against = history[team][-1][7]
     goals_for.push g_for
     goals_against.push g_against
+    played.push history[team].size
 }
 
-left_scale = goals_against.max
-right_scale = goals_for.max
+scale_left = proc { |i| 100*i/goals_against.max }
+scale_right = proc { |i| 100*i/goals_for.max }
 
 teams.each_with_index { |team, i|
     y = (height+2)*i + height
 
-    lx = 100 * goals_against[i] / left_scale
-    rx = 100 * goals_for[i] / right_scale
+    lx = scale_left.call(goals_against[i])
+    rx = scale_right.call(goals_for[i])
+
+    al = scale_left.call(goals_against[i] / played[i])
+    rl = scale_left.call(goals_for[i] / played[i])
 
     svg << SVG::Rect.new(150 - lx, y-10, lx, height) { self.style = SVG::Style.new(:fill => '#ffdddd')}
     svg << SVG::Rect.new(150, y-10, rx, height) { self.style = SVG::Style.new(:fill => '#ddffdd')}
